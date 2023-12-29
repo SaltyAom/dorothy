@@ -61,7 +61,7 @@ jobs:
           project: ${{ secrets.DEPLOYS_NAME }}
           location: gke.cluster-rcf2
           name: dorothy-${{ matrix.context }}
-          image: ghcr.io/${{ github.repository }}-${{ matrix.context }}
+          image: ghcr.io/${{ steps.string.outputs.lowercase }}-${{ matrix.context }}
           minReplicas: 2
           maxReplicas: 20
         env:

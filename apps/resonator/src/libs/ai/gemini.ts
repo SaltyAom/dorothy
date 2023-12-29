@@ -35,7 +35,7 @@ const safety = [
 
 const model = genAI.getGenerativeModel({
     model: 'gemini-pro',
-    safetySettings: safety
+    // safetySettings: safety
 })
 
 export class Gemini implements CharacterAI {

@@ -14,7 +14,7 @@ const createCharacterBase = createInsertSchema(Table.character, {
 const createCharacter = t.Omit(createCharacterBase, ['id'])
 
 export const characterAdmin = new Elysia({
-    name: 'controller/admin/character',
+    name: '@controller/admin/character',
     prefix: '/admin/character'
 })
     .use(ElyAuth)

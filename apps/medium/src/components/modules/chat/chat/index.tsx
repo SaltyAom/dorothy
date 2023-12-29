@@ -22,9 +22,7 @@ function PlaceholderMessages({
     const CharacterImage = () =>
         image ? <img src={image!} alt="Profile" /> : <div className="image" />
 
-    const {
-        profile: userImage
-    } = user ?? {}
+    const { profile: userImage } = user ?? {}
 
     const UserImage = () =>
         !userImage || isUserLoading ? (
@@ -66,7 +64,7 @@ export default function Chat() {
         requestAnimationFrame(() => {
             window.scrollTo(0, document.body.scrollHeight)
         })
-    }, [chats])
+    }, [chats.length])
 
     if (isCharacterLoading)
         return (
@@ -78,14 +76,6 @@ export default function Chat() {
     if (!character) return 'Something went wrong.'
 
     const { profile: userImage } = user ?? {}
-
-    const UserImage = () =>
-        isUserLoading ? (
-            <div className="image" />
-        ) : (
-            <img src={userImage ?? image ?? ''} alt="Profile" />
-        )
-
     const { name, image = '', greeting } = character
 
     return (
@@ -107,7 +97,14 @@ export default function Chat() {
                         className={`chat ${role === 'assistant' ? '-bot' : ''}`}
                     >
                         {role === 'user' ? (
-                            <UserImage />
+                            isUserLoading ? (
+                                <div className="image" />
+                            ) : (
+                                <img
+                                    src={userImage ?? image ?? ''}
+                                    alt="Profile"
+                                />
+                            )
                         ) : (
                             <img src={image!} alt={name} />
                         )}

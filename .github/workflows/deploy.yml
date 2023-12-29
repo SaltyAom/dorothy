@@ -51,7 +51,7 @@ jobs:
         with:
           file: Dockerfile.${{ matrix.context }}
           push: true
-          tags: ghcr.io/${{ ${{ steps.string.outputs.lowercase }} }}-${{ matrix.context }}
+          tags: ghcr.io/${{ steps.string.outputs.lowercase }}-${{ matrix.context }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

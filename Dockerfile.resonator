@@ -1,16 +1,22 @@
-FROM oven/bun:1.0.20 as base
+FROM debian:11.6-slim as base
 
 WORKDIR /app
+
+RUN apt update
+RUN apt install curl unzip -y
+
+RUN curl https://bun.sh/install | bash
 
 COPY apps/resonator/package.json package.json
 
-RUN bun install
+RUN /root/.bun/bin/bun install --production
 
 # ? -------------------------
-FROM oven/bun:1.0.20-distroless
+FROM gcr.io/distroless/base
 
 WORKDIR /app
 
+COPY --from=base /root/.bun/bin/bun bun
 COPY --from=base /app/node_modules node_modules
 COPY --from=base /app/package.json package.json
 

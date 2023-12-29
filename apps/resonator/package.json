@@ -1,0 +1,35 @@
+{
+  "name": "resonator",
+  "version": "1.0.50",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "NODE_ENV=production bun run src/index.ts",
+    "dev": "bun run --watch src/index.ts",
+    "migrate": "drizzle-kit generate:sqlite --out ./drizzle/migrations --breakpoints --schema=./src/libs/database/table.ts && bun src/libs/database/migrate.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.481.0",
+    "@cloudflare/ai": "^1.0.47",
+    "@elysiajs/bearer": "^0.8.0",
+    "@elysiajs/cors": "^0.8.0",
+    "@elysiajs/lucia-auth": "0.8.0-exp.1",
+    "@elysiajs/stream": "^0.8.0",
+    "@elysiajs/swagger": "^0.8.0",
+    "@google/generative-ai": "^0.1.3",
+    "@libsql/client": "^0.4.0-pre.5",
+    "@lucia-auth/adapter-sqlite": "^2.0.1",
+    "@paralleldrive/cuid2": "^2.2.2",
+    "better-sqlite3": "^9.2.2",
+    "drizzle-orm": "^0.29.2",
+    "drizzle-typebox": "^0.1.1",
+    "elysia": "^0.8.6",
+    "elysia-rate-limit": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.8",
+    "bun-types": "latest",
+    "drizzle-kit": "^0.20.8"
+  },
+  "module": "src/index.ts",
+  "types": "src/index.ts"
+}

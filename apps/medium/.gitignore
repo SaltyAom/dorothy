@@ -1,0 +1,6 @@
+.next
+node_modules
+out
+.DS_Store
+yarn-error.log
+.vscode

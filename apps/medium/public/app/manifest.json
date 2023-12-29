@@ -1,0 +1,27 @@
+{
+    "short_name": "Resonator",
+    "name": "Resonator",
+    "icons": [
+      {
+        "src": "/app/icons/mumu_192.jpg",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/app/icons/mumu_384.jpg",
+        "type": "image/png",
+        "sizes": "384x384"
+      },
+      {
+        "src": "/app/icons/mumu_512.jpg",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#fbfff4",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#bef264",
+    "orientation": "portrait"
+  }

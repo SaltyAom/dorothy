@@ -1,0 +1,33 @@
+{
+  "name": "dorothy",
+  "devDependencies": {
+    "@aws-lite/s3-types": "^0.1.8",
+    "@repo/eslint-config": "*",
+    "@repo/typescript-config": "*",
+    "prettier": "^3.1.0",
+    "turbo": "latest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "bun@1.0.19",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "volta": {
+    "node": "20.10.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "dependencies": {
+    "@tanstack/query-sync-storage-persister": "^5.14.2",
+    "@tanstack/react-query-persist-client": "^5.15.0"
+  }
+}

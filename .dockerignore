@@ -1,0 +1,6 @@
+node_modules
+.github
+.turbo
+out
+Dockerfile.medium
+Dockerfile.resonator

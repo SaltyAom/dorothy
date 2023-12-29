@@ -1,0 +1,42 @@
+FROM oven/bun:1.0.20 as base
+
+COPY --from=node:20 /usr/local/bin/node /usr/local/bin/node
+
+WORKDIR /app
+
+COPY package.json package.json
+COPY apps apps
+COPY packages packages
+COPY turbo.json turbo.json
+COPY bun.lockb bun.lockb
+
+RUN bun install --production
+
+COPY tsconfig.json tsconfig.json
+COPY apps/resonator/.env.example apps/resonator/.env
+COPY apps/resonator/.env.example .env
+
+EXPOSE 3001
+ENV RESONATOR https://resonator.gehenna.sh
+ENV NEXT_PUBLIC_RESONATOR https://resonator.gehenna.sh
+
+RUN bun apps/resonator/src/index.ts &
+RUN cd apps/medium && bun run build
+
+# ? -------------------------
+
+FROM node:20-slim as runner
+
+WORKDIR /app
+
+# USER nonroot
+
+ENV NODE_ENV production
+ENV PORT 3000
+
+COPY --from=base /app/node_modules ./node_modules
+COPY --from=base /app/apps/medium/.next/standalone .
+
+CMD ["node", "./apps/medium/server.js"]
+
+EXPOSE 3000

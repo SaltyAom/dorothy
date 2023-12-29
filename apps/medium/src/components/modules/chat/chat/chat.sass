@@ -1,0 +1,17 @@
+.chat
+    @apply flex flex-row-reverse gap-2 md:gap-3 w-full sm:pl-[12.5%] cursor-default select-none
+    -webkit-user-drag: none
+
+    & > img,
+    & > .image
+        @apply size-9 md:size-11 rounded-full object-center object-cover select-none
+        -webkit-user-drag: none
+
+    & > div
+        @apply px-4 py-3 rounded-xl text-lime-800 bg-lime-100 
+
+    &.-bot 
+        @apply flex-row sm:pl-0 sm:pr-[12.5%]
+
+        & > div
+            @apply text-slate-800 bg-slate-100

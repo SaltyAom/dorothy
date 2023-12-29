@@ -52,7 +52,7 @@ export class Gemini implements CharacterAI {
 
         const chat = await model.startChat({
             history,
-            safetySettings: safety
+            // safetySettings: safety
         })
 
         const { response } = await chat.sendMessage(content)

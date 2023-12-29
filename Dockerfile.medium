@@ -17,8 +17,8 @@ COPY apps/resonator/.env.example apps/resonator/.env
 COPY apps/resonator/.env.example .env
 
 EXPOSE 3001
-ENV RESONATOR https://resonator.dorothy.gehenna.sh
-ENV NEXT_PUBLIC_RESONATOR https://resonator.dorothy.gehenna.sh
+ENV RESONATOR https://resonator.gehenna.sh
+ENV NEXT_PUBLIC_RESONATOR https://resonator.gehenna.sh
 
 RUN bun apps/resonator/src/index.ts &
 RUN cd apps/medium && bun run build
@@ -36,6 +36,7 @@ ENV PORT 3000
 
 COPY --from=base /app/node_modules ./node_modules
 COPY --from=base /app/apps/medium/.next/standalone .
+COPY apps/medium/public apps/medium/public
 
 CMD ["node", "./apps/medium/server.js"]
 

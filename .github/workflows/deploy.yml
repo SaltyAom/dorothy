@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        context: [frontend, backend]
+        context: [resonator, medium]
 
     steps:
       - name: checkout

@@ -21,7 +21,7 @@ module.exports = withPlugins(
             outputFileTracingRoot: join(__dirname, '../../')
         },
         output: 'standalone',
-        // swcMinify: true,
+        swcMinify: true,
         async rewrites() {
             return [
                 {

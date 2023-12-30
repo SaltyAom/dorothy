@@ -21,12 +21,12 @@ export const auth = new Elysia({
         },
         (app) =>
             app
-                .use(
-                    rateLimit({
-                        max: 8,
-                        duration: 1500
-                    })
-                )
+                // .use(
+                //     rateLimit({
+                //         max: 8,
+                //         duration: 1500
+                //     })
+                // )
                 .put('/sign-up', async ({ body, user }) =>
                     user.signUp({
                         ...body,

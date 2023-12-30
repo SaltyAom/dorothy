@@ -44,12 +44,12 @@ export const character = new Elysia({
         (app) =>
             app
                 .get('', ({ params: { id } }) => dream.character.byId(id))
-                .use(
-                    rateLimit({
-                        max: 10,
-                        duration: 1500
-                    })
-                )
+                // .use(
+                //     rateLimit({
+                //         max: 10,
+                //         duration: 1500
+                //     })
+                // )
                 .get(
                     '/chat',
                     async ({
@@ -58,6 +58,7 @@ export const character = new Elysia({
                         query: { conversation: conversationId }
                     }) => {
                         const userId = await user.id
+
                         if (conversationId) {
                             setImmediate(() => {
                                 dream.conversation.setActiveConversation(

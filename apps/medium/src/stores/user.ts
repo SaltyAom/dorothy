@@ -23,7 +23,8 @@ export const useUser = () => {
     } = useQuery({
         enabled: user === undefined,
         queryKey: ['user', 'profile'],
-        retry: false,
+        retry: 2,
+        staleTime: Infinity,
         queryFn: async () => {
             const { data, error } = await resonator.auth.profile.get()
 

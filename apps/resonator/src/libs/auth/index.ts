@@ -21,7 +21,7 @@ export const Auth = Lucia<InferSelectModel<Table['user']>>({
     },
     cookie: {
         sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        secure: process.env.NODE_ENV === 'production'
+        // secure: process.env.NODE_ENV === 'production'
     }
 })
 

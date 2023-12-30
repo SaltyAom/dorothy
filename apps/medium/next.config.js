@@ -21,7 +21,7 @@ module.exports = withPlugins(
             outputFileTracingRoot: join(__dirname, '../../')
         },
         output: 'standalone',
-        swcMinify: true,
+        // swcMinify: true,
         async rewrites() {
             return [
                 {
@@ -33,8 +33,8 @@ module.exports = withPlugins(
         env: {
             NEXT_PUBLIC_RESONATOR:
                 process.env.RESONATOR ??
-                process.env.NEXT_PUBLIC_RESONATOR ??
-                'http://192.168.0.181:3001'
+                process.env.NEXT_PUBLIC_RESONATOR
+                // 'http://192.168.0.181:3001'
         },
         images: {
             deviceSizes: [640, 750, 828, 1080],

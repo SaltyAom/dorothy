@@ -3,11 +3,16 @@ import { useEffect, useRef, useState } from 'react'
 import { atom, useAtom } from 'jotai'
 import { useHydrateAtoms } from 'jotai/utils'
 
-import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
+import {
+    useIsMutating,
+    useMutation,
+    useQuery,
+    useQueryClient
+} from '@tanstack/react-query'
 import { QueryCache } from '@tanstack/react-query'
 
 import { resonator } from '@services'
-import { LRUCache } from 'lru-cache'
+import { queryClient } from '@app/providers'
 
 export const characterIdAtom = atom<string | null>(null)
 export const useCharacterId = () => useAtom(characterIdAtom)
@@ -30,7 +35,8 @@ export const useCharacter = () => {
         isPending
     } = useQuery({
         queryKey: ['character', id],
-        queryFn: async () => {
+        staleTime: Infinity,
+        async queryFn() {
             const { data, error } = await resonator.character[id!].get()
 
             if (error) throw error
@@ -73,23 +79,26 @@ export const useConversation = () => {
     }, [characterId])
 
     const {
-        data,
+        data: conversationList,
         isLoading: isConversationLoading,
         refetch: refetchConversations
     } = useQuery({
         queryKey: ['conversation', 'list', characterId],
+        staleTime: Infinity,
         async queryFn() {
             const { data, error } =
                 await resonator.character[characterId!].chat.list.get()
 
             if (error) throw error
 
-            setConversationId(data?.active ?? null)
-
             return data
         },
         enabled: characterId !== null
     })
+
+    useEffect(() => {
+        setConversationId(conversationList?.active ?? null)
+    }, [conversationList])
 
     const { mutate: newConversation, isPending: isCreatingNewConversation } =
         useMutation({
@@ -102,13 +111,27 @@ export const useConversation = () => {
 
                 if (error) throw error
 
-                chatCache.set(characterId! + conversationId!, [])
+                queryClient.invalidateQueries({
+                    refetchType: 'none',
+                    queryKey: ['conversation', 'list', characterId]
+                })
 
                 await refetchConversations()
             }
         })
 
     const dispatch = (action: ConversationActions) => {
+        queryClient.invalidateQueries({
+            refetchType: 'none',
+            queryKey: [
+                'chat',
+                {
+                    characterId,
+                    conversationId: null
+                }
+            ]
+        })
+
         switch (action.type) {
             case 'set':
                 setConversationId(action.payload)
@@ -122,7 +145,7 @@ export const useConversation = () => {
     }
 
     return {
-        ...data,
+        ...conversationList,
         isConversationLoading,
         isCreatingNewConversation,
         dispatch
@@ -143,10 +166,6 @@ type ChatActions =
           payload: Chat[] | ((chats: Chat[]) => Chat[])
       }
 
-const chatCache = new LRUCache<string, Chat[]>({
-    max: 100
-})
-
 const chatAtom = atom<Chat[]>([])
 const chatErrorAtom = atom<string | null>(null)
 export const useChat = () => {
@@ -154,26 +173,18 @@ export const useChat = () => {
     const [chats, setChat] = useAtom(chatAtom)
     const [conversationId] = useConversationId()
 
-    const initialized = useRef(false)
+    const queryClient = useQueryClient()
 
-    const { data: _, isFetching: isChatLoading } = useQuery({
-        queryKey: ['chat', { characterId, conversationId }],
+    const { data: networkChat, isFetching: isChatLoading } = useQuery({
+        queryKey: [
+            'chat',
+            {
+                characterId,
+                conversationId
+            }
+        ],
+        staleTime: Infinity,
         async queryFn() {
-            if (!initialized.current && conversationId) {
-                initialized.current = true
-
-                return chats
-            }
-
-            if (conversationId) {
-                const cache = chatCache.get(characterId! + conversationId)
-
-                if (cache) {
-                    setChat(cache)
-                    return cache
-                }
-            }
-
             const { data, error } = await resonator.character[
                 characterId!
             ].chat.get({
@@ -184,13 +195,14 @@ export const useChat = () => {
 
             if (error) throw error
 
-            setChat(data)
-            chatCache.set(characterId! + conversationId!, data)
-
             return data
         },
         enabled: characterId !== null
     })
+
+    useEffect(() => {
+        if (networkChat) setChat(networkChat)
+    }, [networkChat])
 
     const isTyping =
         useIsMutating({
@@ -226,6 +238,17 @@ export const useChat = () => {
                 time: new Date().toString()
             })
 
+            queryClient.invalidateQueries({
+                refetchType: 'none',
+                queryKey: [
+                    'chat',
+                    {
+                        characterId,
+                        conversationId
+                    }
+                ]
+            })
+
             if (error) throw error
 
             setChat((chats) => {
@@ -236,12 +259,6 @@ export const useChat = () => {
                         content: data
                     }
                 ] as Chat[]
-
-                if (conversationId)
-                    chatCache.set(
-                        characterId! + conversationId,
-                        newChats as any
-                    )
 
                 return newChats as any
             })

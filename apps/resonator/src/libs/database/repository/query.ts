@@ -242,7 +242,7 @@ class Conversation extends DreamRepository {
         characterId: string,
         conversationId: string,
         {
-            validate = true
+            validate = false
         }: {
             validate?: boolean
         } = {}

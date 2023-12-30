@@ -10,7 +10,7 @@ COPY packages packages
 COPY turbo.json turbo.json
 COPY bun.lockb bun.lockb
 
-RUN bun install --production
+RUN bun install
 
 COPY tsconfig.json tsconfig.json
 COPY apps/resonator/.env.example apps/resonator/.env

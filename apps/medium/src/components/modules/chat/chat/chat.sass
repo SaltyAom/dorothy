@@ -7,6 +7,17 @@
         @apply size-9 min-w-9 md:size-11 md:min-w-11 rounded-full object-center object-cover select-none
         -webkit-user-drag: none
 
+    &.-loading
+        animation: fade-in .2s ease-out .2s 1 normal backwards
+
+    @keyframes fade-in
+        0%
+            opacity: 0
+            
+        100%
+            opacity: 1
+            
+
     & > div
         @apply px-4 py-3 rounded-xl text-lime-800 bg-lime-100 
 

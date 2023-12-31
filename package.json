@@ -25,9 +25,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "dependencies": {
-    "@tanstack/query-sync-storage-persister": "^5.14.2",
-    "@tanstack/react-query-persist-client": "^5.15.0"
-  }
+  ]
 }

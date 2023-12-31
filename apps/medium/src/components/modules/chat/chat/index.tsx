@@ -1,6 +1,8 @@
 'use client'
 
 import { useLayoutEffect } from 'react'
+
+import { motion, AnimatePresence } from 'framer-motion'
 import { useQuery } from '@tanstack/react-query'
 
 import Markdown from 'react-markdown'
@@ -34,20 +36,20 @@ function PlaceholderMessages({
     return (
         <>
             {!greeted && (
-                <article className="chat -bot">
+                <article className="chat -bot -loading">
                     <CharacterImage />
                     <div className="w-full h-48" />
                 </article>
             )}
-            <article className="chat">
+            <article className="chat -loading">
                 <UserImage />
-                <div className="w-3/4 h-16" />
+                <div className="w-3/4 h-16 -loading" />
             </article>
-            <article className="chat -bot">
+            <article className="chat -bot -loading">
                 <CharacterImage />
-                <div className="w-full h-64" />
+                <div className="w-full h-64 -loading" />
             </article>
-            <article className="chat">
+            <article className="chat -loading">
                 <UserImage />
                 <div className="w-1/2 h-16" />
             </article>
@@ -73,10 +75,10 @@ export default function Chat() {
             </section>
         )
 
-    if (!character) return 'Something went wrong.'
+    if (!isChatLoading && !character) return 'Something went wrong.'
 
     const { profile: userImage } = user ?? {}
-    const { name, image = '', greeting } = character
+    const { name, image = '', greeting } = character ?? {}
 
     return (
         <section className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto">
@@ -91,9 +93,9 @@ export default function Chat() {
             {isChatLoading ? (
                 <PlaceholderMessages image={image!} />
             ) : (
-                chats.map(({ role, content }, index) => (
+                chats.map(({ id, role, content }) => (
                     <article
-                        key={index}
+                        key={id}
                         className={`chat ${role === 'assistant' ? '-bot' : ''}`}
                     >
                         {role === 'user' ? (
@@ -114,14 +116,14 @@ export default function Chat() {
                     </article>
                 ))
             )}
-            {isTyping && (
-                <article className="chat -bot">
-                    <img src={image!} alt={name} />
-                    <div>
-                        <span className="loading loading-dots loading-sm translate-y-1 text-current" />
-                    </div>
-                </article>
-            )}
+                {isTyping && (
+                    <article className="chat -bot">
+                        <img src={image!} alt={name} />
+                        <div>
+                            <span className="loading loading-dots loading-sm translate-y-1 text-current" />
+                        </div>
+                    </article>
+                )}
             {chatError && (
                 <article className="chat -bot">
                     <img src={image!} alt={name} />

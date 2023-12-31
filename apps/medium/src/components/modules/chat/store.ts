@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { atom, useAtom } from 'jotai'
-import { useHydrateAtoms } from 'jotai/utils'
 
 import {
     useIsMutating,
@@ -16,8 +15,6 @@ import { queryClient } from '@app/providers'
 
 export const characterIdAtom = atom<string | null>(null)
 export const useCharacterId = () => useAtom(characterIdAtom)
-export const hydrateCharacterId = (id: string) =>
-    useHydrateAtoms([[characterIdAtom, id]])
 
 export type Character = NonNullable<
     Awaited<ReturnType<resonator['character'][':id']['get']>>['data']
@@ -43,7 +40,7 @@ export const useCharacter = () => {
 
             return data
         },
-        enabled: id !== null
+        enabled: !!id
     })
 
     return { character, error, isCharacterLoading: isPending }
@@ -93,7 +90,7 @@ export const useConversation = () => {
 
             return data
         },
-        enabled: characterId !== null
+        enabled: !!characterId
     })
 
     useEffect(() => {
@@ -175,7 +172,11 @@ export const useChat = () => {
 
     const queryClient = useQueryClient()
 
-    const { data: networkChat, isFetching: isChatLoading } = useQuery({
+    const {
+        data: networkChat,
+        isFetching,
+        isPending
+    } = useQuery({
         queryKey: [
             'chat',
             {
@@ -197,7 +198,7 @@ export const useChat = () => {
 
             return data
         },
-        enabled: characterId !== null
+        enabled: !!characterId
     })
 
     useEffect(() => {
@@ -234,6 +235,7 @@ export const useChat = () => {
             const { data, error } = await resonator.character[
                 characterId
             ].chat.post({
+                conversationId: conversationId ? conversationId : undefined,
                 content,
                 time: new Date().toString()
             })
@@ -247,6 +249,10 @@ export const useChat = () => {
                         conversationId
                     }
                 ]
+            })
+            queryClient.invalidateQueries({
+                refetchType: 'active',
+                queryKey: ['conversation', 'list', characterId]
             })
 
             if (error) throw error
@@ -289,7 +295,7 @@ export const useChat = () => {
 
     return {
         chats,
-        isChatLoading,
+        isChatLoading: isFetching || isPending,
         isTyping,
         dispatch,
         chatError

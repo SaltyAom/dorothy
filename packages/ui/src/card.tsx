@@ -1,3 +1,5 @@
+import { useHydrateAtoms } from 'jotai/utils'
+
 export function Card({
   className,
   title,

@@ -255,14 +255,20 @@ class Conversation extends DreamRepository {
                     with: {
                         room: {
                             columns: {
-                                characterId: true
+                                characterId: true,
+                                active: true
                             }
                         }
                     }
                 })
                 .execute()
 
-            if (!data || data.room.characterId !== characterId) return
+            if (
+                !data ||
+                data.room.characterId !== characterId ||
+                data.room.active === conversationId
+            )
+                return
         }
 
         return this.db
@@ -389,7 +395,7 @@ class Conversation extends DreamRepository {
         userId,
         characterId,
         repository,
-        body: { content, time }
+        body: { content, time, conversationId: userConversationId }
     }: {
         userId: string
         characterId: string
@@ -397,6 +403,7 @@ class Conversation extends DreamRepository {
         body: {
             content: string
             time?: string
+            conversationId?: string
         }
     }) {
         const now = new Date().getTime()
@@ -409,10 +416,14 @@ class Conversation extends DreamRepository {
 
         const { instruction, greeting } = character
 
-        const conversationId = await this.getActiveConversation(
-            userId,
-            characterId
-        )
+        const conversationId =
+            userConversationId ||
+            (await this.getActiveConversation(userId, characterId))
+
+        if (userConversationId)
+            this.setActiveConversation(userId, characterId, conversationId, {
+                validate: true
+            })
 
         const previousChats = await this.getChatsById(
             userId,

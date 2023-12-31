@@ -22,7 +22,7 @@ const roomAtom = atom<{
 export const useRooms = () => {
     const [{ active, rooms, page, end }, setRooms] = useAtom(roomAtom)
 
-    const { data: roomNetwork, isFetching: isRoomLoading } = useQuery({
+    const { data: roomNetwork, isFetching, isPending } = useQuery({
         enabled: active && !end,
         queryKey: ['room', 'page', page],
         staleTime: Infinity,
@@ -72,6 +72,6 @@ export const useRooms = () => {
 
     return {
         rooms,
-        isRoomLoading
+        isRoomLoading: isFetching || isPending
     }
 }

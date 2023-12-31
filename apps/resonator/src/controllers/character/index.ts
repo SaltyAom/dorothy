@@ -93,6 +93,7 @@ export const character = new Elysia({
                         }),
                     {
                         body: t.Object({
+                            conversationId: t.Optional(t.String()),
                             content: t.String(),
                             time: t.Optional(t.String())
                         })

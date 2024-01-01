@@ -15,6 +15,11 @@ const app = new Elysia()
     .use(admin)
     .use(auth)
     .use(character)
+    .onError(({ error }) => {
+        console.log({
+            error
+        })
+    })
     .listen({
         port: process.env.PORT ?? 3001,
         hostname: '0.0.0.0'

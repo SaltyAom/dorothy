@@ -1,0 +1,1 @@
+ALTER TABLE chat ADD `images` text;

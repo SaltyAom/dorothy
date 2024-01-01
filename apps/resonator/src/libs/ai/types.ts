@@ -12,8 +12,19 @@ export type Prompt<Model extends Models = 'gemini'> = Model extends 'GPT'
           parts: string
       }
 
+export type Message = Omit<Instruction<any>, 'model'> & {
+    content: string
+} & {
+    images?: File[]
+}
+
+export type VisionMessage = {
+    images: File[]
+    content: string
+}
+
 export abstract class CharacterAI {
-    abstract chat(messages: Omit<Instruction<any>, 'model'> & {
-        content: string
-    }): Promise<string>
+    abstract chat(messages: Message): Promise<string>
+
+    abstract vision(messages: VisionMessage): Promise<string>
 }

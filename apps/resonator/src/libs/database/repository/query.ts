@@ -34,7 +34,9 @@ class User extends DreamRepository {
         return this.db
             .update(Table.user)
             .set({
-                profile: await Storage.upload(profile),
+                profile: await Storage.upload(profile, {
+                    prefix: 'profile/'
+                }),
                 ...data
             })
             .where(eq(Table.user.id, id))
@@ -354,7 +356,8 @@ class Conversation extends DreamRepository {
                         id: true,
                         createdAt: true,
                         content: true,
-                        role: true
+                        role: true,
+                        images: true
                     }
                 }
             },
@@ -367,35 +370,20 @@ class Conversation extends DreamRepository {
             room: { id },
             chats
         } = data
-        if (id === conversationId) return chats
 
-        return this.db.query.conversation
-            .findFirst({
-                columns: {},
-                with: {
-                    chats: {
-                        columns: {
-                            id: true,
-                            createdAt: true,
-                            content: true,
-                            role: true
-                        }
-                    }
-                },
-                where: eq(Table.conversation.id, conversationId)
-            })
-            .then((data) => {
-                if (!data?.chats) return []
+        // if (id !== conversationId) return []
 
-                return data.chats
-            })
+        return chats.map(({ images, ...chat }) => ({
+            ...chat,
+            images: images?.split(',')
+        }))
     }
 
     async chat({
         userId,
         characterId,
         repository,
-        body: { content, time, conversationId: userConversationId }
+        body: { content, time, conversationId: userConversationId, images }
     }: {
         userId: string
         characterId: string
@@ -404,6 +392,7 @@ class Conversation extends DreamRepository {
             content: string
             time?: string
             conversationId?: string
+            images?: File[]
         }
     }) {
         const now = new Date().getTime()
@@ -439,13 +428,43 @@ class Conversation extends DreamRepository {
             greeting: character.greeting,
             time,
             chats: previousChats,
-            content
+            content,
+            images
+        })
+
+        const imagesLink = await Storage.uploadMultiple(images, {
+            prefix: `uploads/${characterId}`
         })
 
         const saveChat = (id = conversationId) => {
-            this.db.update(Table.conversation).set({
-                updatedAt: now
-            })
+            this.db
+                .update(Table.conversation)
+                .set({
+                    updatedAt: now
+                })
+                .where(eq(Table.conversation.id, id))
+                .returning({
+                    roomId: Table.conversation.roomId
+                })
+                .execute()
+                .then((conversations) =>
+                    conversations.forEach((conversation) => {
+                        if (!conversation) return
+
+                        this.db
+                            .update(Table.room)
+                            .set({
+                                updatedAt: now
+                            })
+                            .where(
+                                eq(
+                                    Table.conversation.roomId,
+                                    conversation.roomId
+                                )
+                            )
+                            .execute()
+                    })
+                )
 
             return this.db
                 .insert(Table.chat)
@@ -454,7 +473,8 @@ class Conversation extends DreamRepository {
                         conversationId: id,
                         role: 'user',
                         content,
-                        createdAt: now
+                        createdAt: now,
+                        images: imagesLink?.join(',')
                     },
                     {
                         conversationId: id,
@@ -473,7 +493,9 @@ class Conversation extends DreamRepository {
             )
         }
 
-        return sentence
+        return {
+            content: sentence
+        }
     }
 }
 

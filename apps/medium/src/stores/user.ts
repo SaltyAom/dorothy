@@ -3,6 +3,7 @@ import { atom, useAtom } from 'jotai'
 
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
 import { resonator } from '@services'
+import { queryClient } from '@app/providers'
 
 type Profile = Awaited<ReturnType<resonator['auth']['profile']['get']>>['data']
 type UpdateProfile = Partial<
@@ -46,6 +47,11 @@ export const useUser = () => {
 
             if (error) throw error.value
 
+            queryClient.invalidateQueries({
+                type: 'inactive',
+                queryKey: ['user', 'profile']
+            })
+
             setUser(data)
 
             return data
@@ -63,6 +69,11 @@ export const useUser = () => {
             const { data, error } = await resonator.auth['sign-out'].get()
 
             if (error) throw error.value
+
+            queryClient.invalidateQueries({
+                type: 'inactive',
+                queryKey: ['user', 'profile']
+            })
 
             window.location.reload()
         }

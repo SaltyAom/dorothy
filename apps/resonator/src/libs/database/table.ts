@@ -87,6 +87,7 @@ export const chat = sqliteTable('chat', {
     }),
     role: text('role', { enum: ['user', 'assistant'] }).notNull(),
     content: text('content').notNull(),
+    images: text('images'),
     createdAt: integer('created_at').notNull().$defaultFn(Date.now)
 })
 

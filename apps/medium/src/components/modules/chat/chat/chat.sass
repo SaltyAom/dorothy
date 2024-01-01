@@ -10,6 +10,9 @@
     &.-loading
         animation: fade-in .2s ease-out 0s 1 normal backwards
 
+        & > section
+            @apply w-full
+
     @screen sm
         &.-loading
             animation-delay: .2s
@@ -21,12 +24,14 @@
         100%
             opacity: 1
             
+    & > section
+        @apply flex flex-col items-end gap-1
 
-    & > div
-        @apply px-4 py-3 rounded-xl text-lime-800 bg-lime-100 
+        & > div
+            @apply px-4 py-3 rounded-xl text-lime-800 bg-lime-100 
 
     &.-bot 
         @apply flex-row sm:pl-0 sm:pr-[12.5%]
 
-        & > div
+        & > section > div
             @apply text-slate-800 bg-slate-100

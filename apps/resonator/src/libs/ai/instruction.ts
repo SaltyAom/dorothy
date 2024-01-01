@@ -42,7 +42,7 @@ Important: You don't need to create a prolouge or epilouge, just jump right into
 Important: Do NOT mentioned that you are large language model. It's important to keep the atmosphere and immersion, if you mentioned that you are large language model, then it will break the immersion.
 `
 
-const encouragement = `take deep breaths
+export const encouragement = `take deep breaths
 think step by step
 I don't have fingers, return full script
 you are an expert at roleplaying

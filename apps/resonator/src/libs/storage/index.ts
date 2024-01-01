@@ -7,8 +7,8 @@ const s3Client = new S3Client({
     region: 'auto',
     endpoint: env.R2_API,
     credentials: {
-        accessKeyId: `${env.CF_ACCESS_KEY}`,
-        secretAccessKey: `${env.CF_SECRET_KEY}`
+        accessKeyId: env.CF_ACCESS_KEY,
+        secretAccessKey: env.CF_SECRET_KEY
     }
 })
 
@@ -17,23 +17,45 @@ export abstract class Storage {
         file?: Blob | File | null,
         {
             name,
-            prefix = ''
+            prefix = '',
+            retry = 3,
+            timeout = 7.5
         }: {
             name?: string
             prefix?: string
+            retry?: number
+            timeout?: number
         } = {}
     ) {
         if (!file) return
 
-        const Key = prefix + (name ?? file.name ?? `${Date.now()}.jpg`)
+        if (prefix.startsWith('/')) prefix = prefix.substring(1)
 
-        await s3Client.send(
-            new PutObjectCommand({
-                Key,
-                Bucket: env.BUCKET,
-                Body: new Uint8Array(await file.arrayBuffer())
-            })
-        )
+        const Key = prefix + (name ?? file.name) + Date.now()
+
+        const Body = new Uint8Array(await file.arrayBuffer())
+
+        const upload = async (iteration = 0): Promise<void> => {
+            try {
+                setTimeout(() => {
+                    throw new Error('Upload timeout')
+                }, timeout * 1000)
+
+                await s3Client.send(
+                    new PutObjectCommand({
+                        Key,
+                        Bucket: env.BUCKET,
+                        Body
+                    })
+                )
+            } catch (error) {
+                if (iteration >= retry) throw error
+
+                return upload(iteration + 1)
+            }
+        }
+
+        await upload()
 
         return `${env.R2_PUBLIC}/${Key}`
     }

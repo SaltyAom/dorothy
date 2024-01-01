@@ -8,7 +8,6 @@ import {
     useQuery,
     useQueryClient
 } from '@tanstack/react-query'
-import { QueryCache } from '@tanstack/react-query'
 
 import { resonator } from '@services'
 import { queryClient } from '@app/providers'
@@ -19,8 +18,6 @@ export const useCharacterId = () => useAtom(characterIdAtom)
 export type Character = NonNullable<
     Awaited<ReturnType<resonator['character'][':id']['get']>>['data']
 >
-
-const cache = new QueryCache()
 
 export const characterAtom = atom<Character | null>(null)
 export const useCharacter = () => {
@@ -156,7 +153,10 @@ export type Chat = NonNullable<
 type ChatActions =
     | {
           type: 'add'
-          payload: string
+          payload: {
+              content: string
+              images?: File[]
+          }
       }
     | {
           type: 'set'
@@ -218,16 +218,13 @@ export const useChat = () => {
 
     const { mutate: sendMessage, data: response } = useMutation({
         mutationKey: ['chat', 'add', characterId, chats.length],
-        onError(error) {
-            const message = // @ts-ignore
-                (error?.value ?? error.message ?? `${error}`).replace(
-                    '[GoogleGenerativeAI Error]: ',
-                    ''
-                )
-
-            setChatError(message)
-        },
-        mutationFn: async (content: string) => {
+        mutationFn: async ({
+            content,
+            images
+        }: {
+            content: string
+            images?: File[]
+        }) => {
             setChatError(null)
 
             if (!characterId) throw new Error('Missing character id')
@@ -237,6 +234,7 @@ export const useChat = () => {
             ].chat.post({
                 conversationId: conversationId ? conversationId : undefined,
                 content,
+                images: images?.length ? images : undefined,
                 time: new Date().toString()
             })
 
@@ -261,30 +259,47 @@ export const useChat = () => {
                 const newChats = [
                     ...chats,
                     {
+                        id: Date.now().toString(),
                         role: 'assistant',
-                        content: data
-                    }
+                        content: data.content,
+                        createdAt: Date.now(),
+                        images: undefined
+                    } satisfies Chat
                 ] as Chat[]
 
                 return newChats as any
             })
-        }
+        },
+        onError(error) {
+            const message = // @ts-ignore
+                (error?.value ?? error.message ?? `${error}`).replace(
+                    '[GoogleGenerativeAI Error]: ',
+                    ''
+                )
+
+            setChatError(message)
+        },
     })
 
-    const dispatch = (action: ChatActions) => {
+    const dispatch = async (action: ChatActions) => {
         switch (action.type) {
             case 'add':
+                const { content, images } = action.payload
+
+                const tempImages = await fileListToBase64(images)
+
+                sendMessage(action.payload)
                 setChat((chats) => [
                     ...chats,
                     {
                         id: Date.now().toString(),
-                        content: action.payload,
+                        content,
+                        images: tempImages,
                         role: 'user',
                         createdAt: Date.now(),
                         conversationId: conversationId!
                     }
                 ])
-                sendMessage(action.payload)
                 break
 
             case 'set':
@@ -300,4 +315,27 @@ export const useChat = () => {
         dispatch,
         chatError
     }
+}
+
+export const fileListToBase64 = async (files?: FileList | File[] | null) => {
+    if (!files) return
+
+    const images: Promise<string>[] = []
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+
+        images.push(
+            new Promise((resolve) => {
+                reader.onload = () => {
+                    resolve(reader.result as string)
+                }
+            })
+        )
+    }
+
+    return Promise.all(images)
 }

@@ -39,20 +39,28 @@ function PlaceholderMessages({
             {!greeted && (
                 <article className="chat -bot -loading">
                     <CharacterImage />
-                    <div className="w-full h-48" />
+                    <section>
+                        <div className="w-full h-48" />
+                    </section>
                 </article>
             )}
             <article className="chat -loading">
                 <UserImage />
-                <div className="w-3/4 h-16 -loading" />
+                <section>
+                    <div className="w-3/4 h-16 -loading" />
+                </section>
             </article>
             <article className="chat -bot -loading">
                 <CharacterImage />
-                <div className="w-full h-64 -loading" />
+                <section>
+                    <div className="w-full h-64 -loading" />
+                </section>
             </article>
             <article className="chat -loading">
                 <UserImage />
-                <div className="w-1/2 h-16" />
+                <section>
+                    <div className="w-1/2 h-16" />
+                </section>
             </article>
         </>
     )
@@ -73,13 +81,6 @@ export default function Chat() {
             )
         })
     }, [chats.length])
-
-    // if (isCharacterLoading)
-    //     return (
-    //         <section className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto opacity-75">
-    //             <PlaceholderMessages />
-    //         </section>
-    //     )
 
     if (!isChatLoading && !character) return 'Something went wrong.'
 
@@ -111,15 +112,17 @@ export default function Chat() {
                 {!isChatLoading && (
                     <article className="chat -bot">
                         <img src={image!} alt={name} />
-                        <div>
-                            <Markdown>{greeting}</Markdown>
-                        </div>
+                        <section>
+                            <div>
+                                <Markdown>{greeting}</Markdown>
+                            </div>
+                        </section>
                     </article>
                 )}
                 {isChatLoading ? (
                     <PlaceholderMessages image={image!} />
                 ) : (
-                    chats.map(({ id, role, content }, index) => (
+                    chats.map(({ id, role, content, images }, index) => (
                         <article
                             key={index}
                             className={`chat ${
@@ -138,26 +141,45 @@ export default function Chat() {
                             ) : (
                                 <img src={image!} alt={name} />
                             )}
-                            <div>
-                                <Markdown>{content}</Markdown>
-                            </div>
+                            <section>
+                                {!!images?.length && (
+                                    <section className="flex flex-col items-end gap-2 p-2">
+                                        {images?.map((image) => (
+                                            <img
+                                                key={image}
+                                                src={image}
+                                                className="max-h-96 rounded-2xl object-contain object-center"
+                                            />
+                                        ))}
+                                    </section>
+                                )}
+                                {!!content && (
+                                    <div className="flex flex-col max-w-full gap-1">
+                                        <Markdown>{content}</Markdown>
+                                    </div>
+                                )}
+                            </section>
                         </article>
                     ))
                 )}
                 {isTyping && (
                     <article className="chat -bot">
                         <img src={image!} alt={name} />
-                        <div>
-                            <span className="loading loading-dots loading-sm translate-y-1 text-current" />
-                        </div>
+                        <section>
+                            <div>
+                                <span className="loading loading-dots loading-sm translate-y-1 text-current" />
+                            </div>
+                        </section>
                     </article>
                 )}
                 {chatError && (
                     <article className="chat -bot">
                         <img src={image!} alt={name} />
-                        <div className="!text-amber-700 !bg-amber-50 font-medium">
-                            <Markdown>{chatError}</Markdown>
-                        </div>
+                        <section>
+                            <div className="!text-amber-700 !bg-amber-50 font-medium">
+                                <Markdown>{chatError}</Markdown>
+                            </div>
+                        </section>
                     </article>
                 )}
             </motion.section>

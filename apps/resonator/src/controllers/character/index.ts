@@ -84,7 +84,7 @@ export const character = new Elysia({
                 )
                 .post(
                     '/chat',
-                    async ({ user, params: { id: characterId }, body }) =>
+                    async ({ user, body, params: { id: characterId } }) =>
                         dream.conversation.chat({
                             userId: await user.id,
                             characterId,
@@ -95,7 +95,18 @@ export const character = new Elysia({
                         body: t.Object({
                             conversationId: t.Optional(t.String()),
                             content: t.String(),
-                            time: t.Optional(t.String())
+                            time: t.Optional(t.String()),
+                            images: t.Optional(
+                                t.Files({
+                                    maxSize: '4m',
+                                    type: [
+                                        'image/png',
+                                        'image/jpeg',
+                                        'image/webp',
+                                        'image/heic'
+                                    ]
+                                })
+                            )
                         })
                     }
                 )

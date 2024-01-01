@@ -22,7 +22,7 @@
     "better-sqlite3": "^9.2.2",
     "drizzle-orm": "^0.29.2",
     "drizzle-typebox": "^0.1.1",
-    "elysia": "^0.8.6",
+    "elysia": "^0.8.8",
     "elysia-rate-limit": "^2.0.1"
   },
   "devDependencies": {

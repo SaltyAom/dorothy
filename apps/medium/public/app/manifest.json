@@ -20,7 +20,7 @@
     ],
     "start_url": "/",
     "background_color": "#fbfff4",
-    "display": "standalone",
+    "display": "fullscreen",
     "scope": "/",
     "theme_color": "#bef264",
     "orientation": "portrait"

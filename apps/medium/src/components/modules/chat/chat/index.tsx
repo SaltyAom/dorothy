@@ -74,12 +74,12 @@ export default function Chat() {
         })
     }, [chats.length])
 
-    if (isCharacterLoading)
-        return (
-            <section className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto opacity-75">
-                <PlaceholderMessages />
-            </section>
-        )
+    // if (isCharacterLoading)
+    //     return (
+    //         <section className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto opacity-75">
+    //             <PlaceholderMessages />
+    //         </section>
+    //     )
 
     if (!isChatLoading && !character) return 'Something went wrong.'
 
@@ -89,7 +89,11 @@ export default function Chat() {
     return (
         <AnimatePresence>
             <motion.section
-                key={conversationId}
+                key={
+                    (conversationId ?? 'unknown') +
+                    '_' +
+                    (isChatLoading ? 'loading' : 'active')
+                }
                 className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto"
                 initial={{
                     opacity: 0,
@@ -115,9 +119,9 @@ export default function Chat() {
                 {isChatLoading ? (
                     <PlaceholderMessages image={image!} />
                 ) : (
-                    chats.map(({ id, role, content }) => (
+                    chats.map(({ id, role, content }, index) => (
                         <article
-                            key={id}
+                            key={index}
                             className={`chat ${
                                 role === 'assistant' ? '-bot' : ''
                             }`}

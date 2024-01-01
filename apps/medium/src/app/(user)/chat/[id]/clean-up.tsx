@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useParams } from 'next/navigation'
 
 import { useHydrateAtoms } from 'jotai/utils'
@@ -31,6 +31,17 @@ export default function CleanUp({
             dispatch({ type: 'set', payload: [] })
         }
     }, [id])
+
+    useLayoutEffect(() => {
+        setTimeout(() => {
+            window.scrollTo({
+                top:
+                    document.getElementsByClassName('page')[0]?.clientHeight ??
+                    document.body.clientHeight,
+                behavior: 'smooth'
+            })
+        }, 400)
+    }, [])
 
     return null
 }

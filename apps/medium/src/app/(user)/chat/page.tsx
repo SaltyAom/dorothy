@@ -37,7 +37,9 @@ export default function Chats() {
                         ? Array.from({ length: 8 }).map((_, i) => (
                               <a key={i.toString()}>
                                   <motion.article
-                                      className="flex items-center gap-3 md:gap-4 w-full px-4 py-3 md:p-2 md:rounded-xl"
+                                      className={`flex items-center gap-3 md:gap-4 w-full px-4 py-3 md:p-2 md:rounded-xl ${
+                                          isRoomLoading ? '' : 'animate-pulse'
+                                      }`}
                                       exit={{
                                           opacity: 0,
                                           transition: {

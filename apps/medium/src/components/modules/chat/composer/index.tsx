@@ -37,7 +37,7 @@ export default function Composer() {
     return (
         <div className="sticky bottom-4 w-full px-4 mt-4">
             <form
-                className="flex items-center text-lime-800 bg-lime-100 p-1.5 rounded-2xl md:focus-within:ring ring-lime-200 transition-all overflow-x-hidden"
+                className="flex items-center text-lime-800 bg-lime-100 p-1.5 rounded-2xl transition-all overflow-x-hidden"
                 onSubmit={handleSubmit(({ parts }) => {
                     resetForm()
                     dispatch({
@@ -67,7 +67,7 @@ export default function Composer() {
                 />
                 <button
                     type="submit"
-                    className="flex justify-center items-center w-10 h-10 rounded-xl text-lime-700 hover:bg-lime-300/75 focus:bg-lime-300/75 transition-colors"
+                    className="flex justify-center items-center w-10 h-10 rounded-xl text-lime-700 hover:text-lime-500 focus:text-lime-500 transition-colors"
                     disabled={isTyping}
                 >
                     {isTyping ? (

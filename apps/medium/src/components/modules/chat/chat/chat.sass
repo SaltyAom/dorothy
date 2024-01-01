@@ -8,7 +8,11 @@
         -webkit-user-drag: none
 
     &.-loading
-        animation: fade-in .2s ease-out .2s 1 normal backwards
+        animation: fade-in .2s ease-out 0s 1 normal backwards
+
+    @screen sm
+        &.-loading
+            animation-delay: .2s
 
     @keyframes fade-in
         0%

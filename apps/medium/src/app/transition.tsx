@@ -1,9 +1,23 @@
 'use client'
 
-import { useContext, useRef, PropsWithChildren } from 'react'
+import { useContext, useRef, Component, type PropsWithChildren } from 'react'
 import { LayoutRouterContext } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
-export function FrozenRouter(props: PropsWithChildren<{}>) {
+class ErrorBoundary extends Component<PropsWithChildren> {
+    constructor(props: {}) {
+        super(props)
+    }
+
+    static getDerivedStateFromError() {}
+
+    componentDidCatch() {}
+
+    render() {
+        return this.props.children
+    }
+}
+
+export function FrozenRouter(props: PropsWithChildren) {
     const context = useContext(LayoutRouterContext)
     const frozen = useRef(context).current
 

@@ -26,7 +26,7 @@ export default async function Index() {
     return (
         <main className="flex flex-col max-w-6xl w-full min-h-screen mx-auto p-4 md:py-8 select-none drag-none">
             <h1 className="text-3xl font-medium text-lime-800">Characters</h1>
-            <ul className="gallery my-4 gap-4">
+            <ul className="gallery my-4 gap-2 md:gap-4">
                 {data?.map(({ id, name, greeting, image }) => (
                     <Link href={`/chat/${id}`} key={id} className="touch-callout-none">
                         <li className="flex flex-col justify-center items-center gap-1 md:gap-2 mb-auto p-4 rounded-2xl hover:bg-lime-100 focus:bg-lime-100 transition-colors">
@@ -40,7 +40,7 @@ export default async function Index() {
                             <h2 className="text-lime-700 text-center text-xl md:text-2xl font-medium">
                                 {name}
                             </h2>
-                            <p className="text-lime-600 text-sm overflow-hidden line-clamp-2 text-ellipsis">
+                            <p className="text-lime-600 text-sm overflow-hidden line-clamp-2 text-ellipsis text-center">
                                 {greeting}
                             </p>
                         </li>

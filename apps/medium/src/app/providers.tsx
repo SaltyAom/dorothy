@@ -13,7 +13,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { persistQueryClient } from '@tanstack/react-query-persist-client'
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister'
 
-import { isServer } from '@services'
+import { isServer, easing, useScreenSize } from '@services'
 import { usePathname } from 'next/navigation'
 
 import { motion, AnimatePresence } from 'framer-motion'
@@ -36,6 +36,9 @@ const jotaiStore = createStore()
 
 export default function Provider({ children }: PropsWithChildren) {
     const pathname = usePathname()
+    const { width } = useScreenSize()
+
+    const isBig = width > 1024
 
     return (
         <JotaiProvider store={jotaiStore}>
@@ -50,13 +53,15 @@ export default function Provider({ children }: PropsWithChildren) {
                         key={pathname}
                         className="page"
                         initial={{
-                            left: '100%',
+                            left: isBig ? '5%' : '100%',
+                            opacity: isBig ? 0 : 1,
                             zIndex: 10,
                             overflow: 'hidden'
                         }}
                         animate={{
                             left: 0,
                             zIndex: 10,
+                            opacity: 1,
                             overflow: 'unset',
                             transition: {
                                 delay: 0.05
@@ -64,15 +69,15 @@ export default function Provider({ children }: PropsWithChildren) {
                         }}
                         exit={{
                             overflow: 'hidden',
-                            left: '-30%',
+                            left: isBig ? '-5%' : '-30%',
                             transition: {
                                 delay: 0.05
                             }
                         }}
                         transition={{
                             when: 'afterChildren',
-                            duration: 0.4,
-                            ease: [0.16, 1, 0.3, 1],
+                            duration: isBig ? .2 : 0.425,
+                            ease: easing.outQuint
                         }}
                     >
                         <FrozenRouter>{children}</FrozenRouter>

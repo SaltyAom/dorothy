@@ -65,11 +65,10 @@ export default function Chat() {
     const [conversationId] = useConversationId()
 
     useLayoutEffect(() => {
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                window.scrollTo(0, document.body.scrollHeight)
-            })
-        })
+        setTimeout(() => {
+            window.scrollTo(0, document.body.scrollHeight)
+            // 120 fps
+        }, 8)
     }, [chats.length])
 
     if (isCharacterLoading)
@@ -98,7 +97,7 @@ export default function Chat() {
                     translateY: 0
                 }}
                 transition={{
-                    duration: .3,
+                    duration: 0.3,
                     ease: easing.outQuint
                 }}
             >

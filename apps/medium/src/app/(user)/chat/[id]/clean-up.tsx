@@ -32,16 +32,5 @@ export default function CleanUp({
         }
     }, [id])
 
-    useLayoutEffect(() => {
-        setTimeout(() => {
-            window.scrollTo({
-                top:
-                    document.getElementsByClassName('page')[0]?.clientHeight ??
-                    document.body.clientHeight,
-                behavior: 'smooth'
-            })
-        }, 400)
-    }, [])
-
     return null
 }

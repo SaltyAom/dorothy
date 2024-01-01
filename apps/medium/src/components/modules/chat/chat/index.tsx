@@ -65,10 +65,13 @@ export default function Chat() {
     const [conversationId] = useConversationId()
 
     useLayoutEffect(() => {
-        setTimeout(() => {
-            window.scrollTo(0, document.body.scrollHeight)
-            // 120 fps
-        }, 8)
+        requestAnimationFrame(() => {
+            window.scrollTo(
+                0,
+                document.getElementsByClassName('page')[0]?.clientHeight ??
+                    document.body.clientHeight
+            )
+        })
     }, [chats.length])
 
     if (isCharacterLoading)

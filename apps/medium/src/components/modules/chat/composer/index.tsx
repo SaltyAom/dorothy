@@ -62,7 +62,6 @@ export default function Composer() {
                     className="flex flex-1 text-lg bg-transparent placeholder-lime-700 border-none border-transparent focus:border-transparent focus:ring-0 whitespace-prewrap"
                     placeholder="Type a message"
                     inputMode="text"
-                    autoFocus
                     {...register('parts')}
                 />
                 <button

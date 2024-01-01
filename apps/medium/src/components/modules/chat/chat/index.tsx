@@ -66,7 +66,11 @@ export default function Chat() {
 
     useLayoutEffect(() => {
         requestAnimationFrame(() => {
-            window.scrollTo(0, document.body.clientHeight)
+            window.scrollTo(
+                0,
+                document.getElementsByClassName('page')[0]?.clientHeight ??
+                    document.body.clientHeight
+            )
         })
     }, [chats.length])
 

@@ -18,7 +18,7 @@ export const useEditorList = () => {
         isFetching: isEditorLoading,
         refetch
     } = useQuery({
-        enabled: user === undefined,
+        enabled: !!user,
         queryKey: ['editor', 'character', 'list'],
         retry: 2,
         staleTime: Infinity,

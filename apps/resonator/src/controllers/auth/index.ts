@@ -66,8 +66,12 @@ export const auth = new Elysia({
 
                     return user.profile
                 })
-                .get('/sign-out', async ({ user }) => {
-                    await user.signOut()
+                .get('/sign-out', async ({ user, cookie: { session } }) => {
+                    try {
+                        await user.signOut()
+                    } catch {
+                        session.remove()
+                    }
 
                     return 'Signed out'
                 })

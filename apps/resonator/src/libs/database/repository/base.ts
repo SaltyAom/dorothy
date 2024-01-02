@@ -13,7 +13,7 @@ export abstract class DreamRepository {
     }
 
     protected toOne<T extends any[]>([one]: T): T[0] {
-        if (!one) throw new Error('Failed to create character')
+        if (!one) throw new Error('Failed to update')
 
         return one
     }

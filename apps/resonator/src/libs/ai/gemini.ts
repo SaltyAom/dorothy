@@ -85,9 +85,3 @@ export class Gemini implements CharacterAI {
         return text
     }
 }
-
-// new Gemini().vision({
-//     images: [Bun.file('mika_portrait.webp')],
-//     content: "Do you recognize who's this character?"
-// })
-// console.log(Bun.file('mika.jpg'))

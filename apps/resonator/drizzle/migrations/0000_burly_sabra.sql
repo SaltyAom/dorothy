@@ -1,9 +1,12 @@
 CREATE TABLE `character` (
 	`id` text PRIMARY KEY NOT NULL,
 	`name` text NOT NULL,
+	`introduction` text NOT NULL,
 	`image` text,
 	`instruction` text NOT NULL,
-	`greeting` text NOT NULL
+	`greeting` text NOT NULL,
+	`creator_id` text,
+	FOREIGN KEY (`creator_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE TABLE `chat` (
@@ -11,6 +14,7 @@ CREATE TABLE `chat` (
 	`conversation_id` text,
 	`role` text NOT NULL,
 	`content` text NOT NULL,
+	`images` text,
 	`created_at` integer NOT NULL,
 	FOREIGN KEY (`conversation_id`) REFERENCES `conversation`(`id`) ON UPDATE no action ON DELETE cascade
 );

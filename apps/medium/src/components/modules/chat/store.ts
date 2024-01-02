@@ -91,6 +91,15 @@ export const useConversation = () => {
     })
 
     useEffect(() => {
+        if (
+            conversationList &&
+            !conversationList?.active &&
+            conversationList?.conversations.length === 0
+        )
+            dispatch({
+                type: 'new'
+            })
+
         setConversationId(conversationList?.active ?? null)
     }, [conversationList])
 
@@ -104,6 +113,20 @@ export const useConversation = () => {
                     await resonator.character[characterId].chat.list.put()
 
                 if (error) throw error
+
+                queryClient.invalidateQueries({
+                    refetchType: 'none',
+                    queryKey: ['conversation', 'list', characterId]
+                })
+
+                queryClient.invalidateQueries({
+                    refetchType: 'active',
+                    queryKey: ['room', 'page']
+                })
+                queryClient.invalidateQueries({
+                    refetchType: 'active',
+                    queryKey: ['room', 'page', 1]
+                })
 
                 queryClient.invalidateQueries({
                     refetchType: 'none',
@@ -278,7 +301,7 @@ export const useChat = () => {
                 )
 
             setChatError(message)
-        },
+        }
     })
 
     const dispatch = async (action: ChatActions) => {

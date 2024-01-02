@@ -40,9 +40,13 @@ export const key = sqliteTable('user_key', {
 export const character = sqliteTable('character', {
     id: text('id').primaryKey().$defaultFn(createId),
     name: text('name').notNull(),
+    introduction: text('introduction').notNull(),
     image: text('image'),
     instruction: text('instruction').notNull(),
-    greeting: text('greeting').notNull()
+    greeting: text('greeting').notNull(),
+    creatorId: text('creator_id').references(() => user.id, {
+        onDelete: 'cascade'
+    })
 })
 
 export const room = sqliteTable(
@@ -92,7 +96,15 @@ export const chat = sqliteTable('chat', {
 })
 
 export const userRelations = relations(user, ({ many }) => ({
-    rooms: many(room)
+    rooms: many(room),
+    characters: many(character)
+}))
+
+export const characterRelations = relations(character, ({ one }) => ({
+    creator: one(user, {
+        fields: [character.creatorId],
+        references: [user.id]
+    })
 }))
 
 export const roomRelations = relations(room, ({ one, many }) => ({

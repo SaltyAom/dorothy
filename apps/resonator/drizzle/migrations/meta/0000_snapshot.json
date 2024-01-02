@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "08a689f3-bc65-4be1-a1cf-65bdf553f6f2",
+  "id": "8481dc0e-3d5e-4905-a602-4bd1142fd1aa",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "character": {
@@ -16,6 +16,13 @@
         },
         "name": {
           "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "introduction": {
+          "name": "introduction",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -41,10 +48,31 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "character_creator_id_user_id_fk": {
+          "name": "character_creator_id_user_id_fk",
+          "tableFrom": "character",
+          "tableTo": "user",
+          "columnsFrom": [
+            "creator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
@@ -77,6 +105,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "images": {
+          "name": "images",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "created_at": {

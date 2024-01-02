@@ -1,7 +1,7 @@
 import { t, error } from 'elysia'
 
 import { DreamRepository } from './base'
-import { DreamAdmin } from './admin'
+import { DreamEditor } from './editor'
 
 import { and, desc, eq, or } from 'drizzle-orm/sql'
 import type { InferInsertModel } from 'drizzle-orm/table'
@@ -31,10 +31,22 @@ class User extends DreamRepository {
         id: string,
         { profile, ...data }: Partial<typeof this.schema.profile>
     ) {
+        const user = await this.db.query.user
+            .findFirst({
+                columns: {
+                    username: true
+                },
+                where: eq(Table.user.id, id)
+            })
+            .execute()
+
+        if (!user) throw new Error('User not found')
+
         return this.db
             .update(Table.user)
             .set({
                 profile: await Storage.upload(profile, {
+                    name: user.username,
                     prefix: 'profile/'
                 }),
                 ...data
@@ -73,19 +85,27 @@ class Character extends DreamRepository {
     byId<T extends boolean = false>(
         id: string,
         {
-            instruction = false as T
+            instruction = false as T,
+            creatorId
         }: {
             instruction?: T
+            creatorId?: string
         } = {}
     ) {
         return this.db.query.character
             .findFirst({
-                where: eq(Table.character.id, id),
+                where: creatorId
+                    ? and(
+                          eq(Table.character.id, id),
+                          eq(Table.character.creatorId, creatorId)
+                      )
+                    : eq(Table.character.id, id),
                 columns: {
                     id: true,
                     name: true,
                     image: true,
                     greeting: true,
+                    introduction: true,
                     instruction
                 }
             })
@@ -423,18 +443,20 @@ class Conversation extends DreamRepository {
         if (!Array.isArray(previousChats))
             throw error('Unauthorized', 'You do not own this conversation')
 
-        const sentence = await AI.gemini.chat({
-            character: character.instruction,
-            greeting: character.greeting,
-            time,
-            chats: previousChats,
-            content,
-            images
-        })
-
-        const imagesLink = await Storage.uploadMultiple(images, {
-            prefix: `uploads/${characterId}`
-        })
+        const [sentence, imagesLink] = await Promise.all([
+            AI.gemini.chat({
+                name: character.name,
+                character: character.instruction,
+                greeting: character.greeting,
+                time,
+                chats: previousChats,
+                content,
+                images
+            }),
+            await Storage.uploadMultiple(images, {
+                prefix: `uploads/${characterId}`
+            })
+        ])
 
         const saveChat = (id = conversationId) => {
             this.db
@@ -504,7 +526,7 @@ export class Dream extends DreamRepository {
     character = new Character(this.db, this.config)
     conversation = new Conversation(this.db, this.config)
 
-    admin = new DreamAdmin(this.db, this.config)
+    editor = new DreamEditor(this.db, this.config)
 }
 
 export const dream = new Dream()

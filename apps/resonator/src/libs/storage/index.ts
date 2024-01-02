@@ -18,8 +18,8 @@ export abstract class Storage {
         {
             name,
             prefix = '',
-            retry = 3,
-            timeout = 7.5
+            retry = 1,
+            timeout = 6
         }: {
             name?: string
             prefix?: string
@@ -31,7 +31,7 @@ export abstract class Storage {
 
         if (prefix.startsWith('/')) prefix = prefix.substring(1)
 
-        const Key = prefix + (name ?? file.name) + Date.now()
+        const Key = prefix + (name ?? file.name)
 
         const Body = new Uint8Array(await file.arrayBuffer())
 

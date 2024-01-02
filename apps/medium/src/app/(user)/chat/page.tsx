@@ -20,16 +20,38 @@ export default function Chats() {
                         Chats
                     </h1>
                 </Link>
-                <Link href="/profile">
-                    <figure className="size-11 bg-lime-100 rounded-full overflow-hidden">
-                        {isUserLoading || !user?.profile ? null : (
-                            <img
-                                className="object-center object-fit"
-                                src={user.profile}
-                            />
-                        )}
-                    </figure>
-                </Link>
+                <section className="flex flex-row-reverse justify-end items-center gap-2">
+                    <Link href="/profile">
+                        <figure className="size-11 bg-lime-100 rounded-full overflow-hidden">
+                            {isUserLoading || !user?.profile ? null : (
+                                <img
+                                    className="object-center object-fit"
+                                    src={user.profile}
+                                />
+                            )}
+                        </figure>
+                    </Link>
+                    <Link
+                        className="flex justify-center items-center size-12 text-lime-700 bg-lime-100 hover:bg-amber-100 focus:bg-amber-100 hover:text-amber-700 focus:text-amber-700 transition-colors rounded-full"
+                        href="/editor"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="feather feather-edit transform scale-[.85]"
+                        >
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                        </svg>
+                    </Link>
+                </section>
             </header>
             <ul className="flex flex-col gap-1">
                 <AnimatePresence mode="popLayout">
@@ -65,7 +87,7 @@ export default function Chats() {
                                           <img
                                               src={image ?? ''}
                                               alt={name}
-                                              className="size-12 md:size-14 rounded-full object-center items-center"
+                                              className="size-12 md:size-14 min-w-12 md:min-w-14 rounded-full object-cover object-center items-center"
                                           />
                                           <section className="flex flex-col w-full overflow-hidden">
                                               <h2 className="text-lime-800 text-xl md:text-2xl">

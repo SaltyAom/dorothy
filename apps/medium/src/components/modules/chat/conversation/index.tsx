@@ -176,7 +176,7 @@ export default function Conversation() {
 
     return (
         <>
-            <nav className="flex sticky top-0 z-10 justify-start items-center md:hidden gap-2 h-16 p-2 text-lime-800 bg-muelsyse">
+            <nav className="flex sticky top-0 z-10 justify-start items-center md:hidden gap-2 h-14 p-2 text-lime-800 bg-muelsyse">
                 <button
                     className="p-2"
                     onClick={() => setShowMobileSidebar(true)}

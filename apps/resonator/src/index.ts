@@ -15,17 +15,13 @@ const app = new Elysia()
     .use(admin)
     .use(auth)
     .use(character)
-    .onError(({ error }) => {
-        console.log({
-            error
-        })
-    })
-    .listen({
-        port: process.env.PORT ?? 3001,
-        hostname: '0.0.0.0'
-    })
 
 if (process.env.NODE_ENV !== 'production') app.use(swagger())
+
+app.listen({
+    port: process.env.PORT ?? 3001,
+    hostname: '0.0.0.0'
+})
 
 export type app = typeof app
 

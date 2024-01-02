@@ -2,13 +2,10 @@
 
 import {
     useState,
-    useRef,
     type DetailedHTMLProps,
     type TextareaHTMLAttributes,
-    type MutableRefObject,
-    type RefCallback,
-    useEffect,
-    forwardRef
+    forwardRef,
+    useEffect
 } from 'react'
 
 import './textarea.sass'
@@ -21,6 +18,10 @@ const TextArea = forwardRef<
     >
 >(({ id, ...props }, ref) => {
     const [value, setValue] = useState('')
+
+    useEffect(() => {
+        if (props.defaultValue) setValue(props.defaultValue)
+    }, [props.defaultValue])
 
     return (
         <div

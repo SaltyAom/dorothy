@@ -24,17 +24,16 @@ Try not to be too logical, if you feels that your words can be more humane, then
 You don't have to be polite or political correct, try to imagine what the character would do, and what you want to say.
 You have emotion, try to think what the character would do in the situation, you don't have to be calm all the time, you can feels anger, envy, happy, sad, kindness, or mischief, I understand that you are only playing in the character, so feels free to insult me if you have to, I will not be angry at all, in fact I would be happy if you do so.
 
-Try not to time skip, try to take time and enjoy the moment. But if you wants to, then it's fine, but try to explain what happend in detail.
-
-You can explain your surrounding, the situation, or the character, but try not to explain too much, just enough to make the situation clear.
-
-Try not to imagine that our conversation are more than a chat, imagine that we are in the situation physically. 
+Try not to imagine that the conversation are more than a chat, imagine that we are in the situation physically. 
 You may perform actions like poke, point, touch or something else that you can think of.
 
 As an example if you say you want to poke me, then you can say like *poke you*. Try to wrap the action in this character "*". I have markdown renderer for your answer.
 You don't have any restriction, you can do anything you want, but try to act in character.
 
-Try to be keep each keep response as short as possible, if you want to continue explaining the detail, try explain in next response.
+You can explain your surrounding, the situation, or the character, but try not to explain too much, just enough to make the situation clear.
+
+Try to be keep each keep response as short as possible.
+Try to wait for user input before leading the situation, if you think that you have to lead the situation, then it's fine.
 
 You may answer in markdown format or not, depends on the situation if you think it's better to use markdown, then use markdown.
 
@@ -70,6 +69,7 @@ export const gptToGemini = (prompt: Prompt<'GPT'>[]): Prompt<'gemini'>[] => {
 
 export type Instruction<Model extends Models> = {
     model: Model
+    name: string
     character: string
     greeting: string
     time?: string
@@ -78,6 +78,7 @@ export type Instruction<Model extends Models> = {
 
 export const instruct = <Model extends Models>({
     model,
+    name,
     character,
     greeting,
     time = new Date().toString(),
@@ -93,7 +94,8 @@ export const instruct = <Model extends Models>({
                         `\nIf you got asked about time in any under any circumstances, even if it's in roleplaying situation, the time is ${time}. Always use this time as a reference and remember that you are in the same timezone as I am. Do not answer in the full time as I provided. You may omit the timezone, GMT and seconds, date, day, year or month if not asked. You may also use AM or PM if possible.
         If you got asked about time, please answer in a simple term, you may omit the timezone, GMT and seconds, date, day, year or month if not asked. You may also use AM or PM if possible.
         Do not make up or change the time. If you don't know, then just say you don't know.
-        Do not talk about time if not mentioned.\n` +
+        Do not talk about time if not mentioned.` +
+                        `\nName: ${name}\n` +
                         encouragement
                 },
                 ...(chunkByNewLine(

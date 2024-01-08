@@ -14,7 +14,11 @@ export const metadata: Metadata = {
 }
 
 export default async function Index() {
-    const { data, error } = await resonator.character.list[1].get()
+    const { data, error } = await resonator.character.list[1].get({
+        $fetch: {
+            next: { revalidate: 5 }
+        }
+    })
 
     if (error)
         return (

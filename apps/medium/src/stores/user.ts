@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { atom, useAtom } from 'jotai'
 
+import { useRouter } from 'next/navigation'
+
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
 import { resonator } from '@services'
-import { queryClient } from '@app/providers'
+import { persister, queryClient } from '@app/providers'
 
 type Profile = Awaited<ReturnType<resonator['auth']['profile']['get']>>['data']
 type UpdateProfile = Partial<
@@ -15,6 +17,7 @@ type UpdateProfile = Partial<
 const userAtom = atom<Profile | null | undefined>(undefined)
 export const useUser = () => {
     const [user, setUser] = useAtom(userAtom)
+    const router = useRouter()
 
     const {
         data,
@@ -68,14 +71,13 @@ export const useUser = () => {
         mutationFn: async () => {
             const { data, error } = await resonator.auth['sign-out'].get()
 
+            queryClient.clear()
+            await persister.removeClient()
+
+            router.push('/')
+            requestAnimationFrame(window.location.reload)
+
             if (error) throw error.value
-
-            queryClient.invalidateQueries({
-                type: 'inactive',
-                queryKey: ['user', 'profile']
-            })
-
-            window.location.reload()
         }
     })
 

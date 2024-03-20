@@ -4,9 +4,10 @@ import { atom, useAtom } from 'jotai'
 import { useIsMutating, useMutation, useQuery } from '@tanstack/react-query'
 import { resonator } from '@services'
 
-type Room = NonNullable<
-    Awaited<ReturnType<resonator['character']['room'][':page']['get']>>['data']
->[0]
+const CharacterRoom = resonator.character.room({ page: 1 }).get
+type CharacterRoom = typeof CharacterRoom
+
+type Room = NonNullable<Awaited<ReturnType<CharacterRoom>>['data']>[0]
 
 const roomAtom = atom<{
     active: boolean
@@ -22,13 +23,18 @@ const roomAtom = atom<{
 export const useRooms = () => {
     const [{ active, rooms, page, end }, setRooms] = useAtom(roomAtom)
 
-    const { data: roomNetwork, isFetching, isPending } = useQuery({
+    const {
+        data: roomNetwork,
+        isFetching,
+        isPending
+    } = useQuery({
         enabled: active && !end,
         queryKey: ['room', 'page', page],
         staleTime: Infinity,
         queryFn: async () => {
-            const { data: response, error } =
-                await resonator.character.room[page].get()
+            const { data: response, error } = await resonator.character
+                .room({ page })
+                .get()
 
             if (error) throw error.value
 

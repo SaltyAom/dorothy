@@ -21,12 +21,6 @@ export const auth = new Elysia({
         },
         (app) =>
             app
-                // .use(
-                //     rateLimit({
-                //         max: 8,
-                //         duration: 1500
-                //     })
-                // )
                 .put('/sign-up', async ({ body, user }) =>
                     user.signUp({
                         ...body,
@@ -43,36 +37,28 @@ export const auth = new Elysia({
                     }
                 })
     )
-    .guard(
+    .guard({
+        isSignIn: true
+    })
+    .get('/profile', ({ user }) => user.profile)
+    .patch(
+        '/profile',
+        async ({ body, user }) => dream.user.update(await user.id, body),
         {
-            isSignIn: true
-        },
-        (app) =>
-            app
-                .get('/profile', ({ user }) => user.profile)
-                .patch(
-                    '/profile',
-                    async ({ body, user }) =>
-                        dream.user.update(await user.id, body),
-                    {
-                        body: t.Omit(t.Partial(dream.user.schema.profile), [
-                            'id',
-                            'role'
-                        ])
-                    }
-                )
-                .get('/refresh', async ({ user }) => {
-                    await user.refresh()
-
-                    return user.profile
-                })
-                .get('/sign-out', async ({ user, cookie: { session } }) => {
-                    try {
-                        await user.signOut()
-                    } catch {
-                        session.remove()
-                    }
-
-                    return 'Signed out'
-                })
+            body: t.Omit(t.Partial(dream.user.schema.profile), ['id', 'role'])
+        }
     )
+    .get('/refresh', async ({ user }) => {
+        await user.refresh()
+
+        return user.profile
+    })
+    .get('/sign-out', async ({ user, cookie: { session } }) => {
+        try {
+            await user.signOut()
+        } catch {
+            session.remove()
+        }
+
+        return 'Signed out'
+    })

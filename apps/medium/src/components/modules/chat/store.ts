@@ -15,9 +15,10 @@ import { queryClient } from '@app/providers'
 export const characterIdAtom = atom<string | null>(null)
 export const useCharacterId = () => useAtom(characterIdAtom)
 
-export type Character = NonNullable<
-    Awaited<ReturnType<resonator['character'][':id']['get']>>['data']
->
+const CharacterData = resonator.character({ id: 1 }).get
+type CharacterData = typeof CharacterData
+
+export type Character = NonNullable<Awaited<ReturnType<CharacterData>>['data']>
 
 export const characterAtom = atom<Character | null>(null)
 export const useCharacter = () => {
@@ -31,7 +32,7 @@ export const useCharacter = () => {
         queryKey: ['character', id],
         staleTime: Infinity,
         async queryFn() {
-            const { data, error } = await resonator.character[id!].get()
+            const { data, error } = await resonator.character({ id: id! }).get()
 
             if (error) throw error
 
@@ -43,10 +44,11 @@ export const useCharacter = () => {
     return { character, error, isCharacterLoading: isPending }
 }
 
+const CharacterList = resonator.character({ id: 1 }).chat.list.get
+type CharacterList = typeof CharacterList
+
 export type Conversation = NonNullable<
-    Awaited<
-        ReturnType<resonator['character'][':id']['chat']['list']['get']>
-    >['data']
+    Awaited<ReturnType<CharacterList>>['data']
 >
 
 type ConversationActions =
@@ -80,8 +82,9 @@ export const useConversation = () => {
         queryKey: ['conversation', 'list', characterId],
         staleTime: Infinity,
         async queryFn() {
-            const { data, error } =
-                await resonator.character[characterId!].chat.list.get()
+            const { data, error } = await resonator
+                .character({ id: characterId! })
+                .chat.list.get()
 
             if (error) throw error
 
@@ -109,8 +112,9 @@ export const useConversation = () => {
             async mutationFn() {
                 if (!characterId) throw new Error('Missing character id')
 
-                const { data: conversationId, error } =
-                    await resonator.character[characterId].chat.list.put()
+                const { data: conversationId, error } = await resonator
+                    .character({ id: characterId! })
+                    .chat.list.put()
 
                 if (error) throw error
 
@@ -169,9 +173,10 @@ export const useConversation = () => {
     }
 }
 
-export type Chat = NonNullable<
-    Awaited<ReturnType<resonator['character'][':id']['chat']['get']>>['data']
->[0]
+const CharacterChat = resonator.character({ id: 1 }).chat.get
+type CharacterChat = typeof CharacterChat
+
+export type Chat = NonNullable<Awaited<ReturnType<CharacterChat>>['data']>[0]
 
 type ChatActions =
     | {
@@ -209,13 +214,13 @@ export const useChat = () => {
         ],
         staleTime: Infinity,
         async queryFn() {
-            const { data, error } = await resonator.character[
-                characterId!
-            ].chat.get({
-                $query: {
-                    conversation: conversationId ?? ''
-                }
-            })
+            const { data, error } = await resonator
+                .character({ id: characterId! })
+                .chat.get({
+                    query: {
+                        conversation: conversationId ?? ''
+                    }
+                })
 
             if (error) throw error
 
@@ -252,14 +257,14 @@ export const useChat = () => {
 
             if (!characterId) throw new Error('Missing character id')
 
-            const { data, error } = await resonator.character[
-                characterId
-            ].chat.post({
-                conversationId: conversationId ? conversationId : undefined,
-                content,
-                images: images?.length ? images : undefined,
-                time: new Date().toString()
-            })
+            const { data, error } = await resonator
+                .character({ id: characterId! })
+                .chat.post({
+                    conversationId: conversationId ? conversationId : undefined,
+                    content,
+                    images: images?.length ? images : undefined,
+                    time: new Date().toString()
+                })
 
             queryClient.invalidateQueries({
                 refetchType: 'none',

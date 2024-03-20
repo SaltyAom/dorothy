@@ -19,15 +19,15 @@ import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FrozenRouter } from './transition'
 
-const persister = createSyncStoragePersister({
+export const persister = createSyncStoragePersister({
     storage: isServer ? undefined : window.localStorage
 })
 
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: {
-            refetchOnWindowFocus: false,
-            networkMode: 'offlineFirst'
+            staleTime: 0,
+            gcTime: 24 * 60 * 60 * 1000
         }
     }
 })
@@ -76,7 +76,7 @@ export default function Provider({ children }: PropsWithChildren) {
                         }}
                         transition={{
                             when: 'afterChildren',
-                            duration: isBig ? .2 : 0.425,
+                            duration: isBig ? 0.2 : 0.425,
                             ease: easing.outQuint
                         }}
                     >

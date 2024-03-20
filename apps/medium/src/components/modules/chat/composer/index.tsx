@@ -1,4 +1,5 @@
 'use client'
+
 import { useEffect, useRef, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
@@ -13,7 +14,8 @@ import { Textarea } from '@shared'
 
 const model = z.object({
     content: z.string(),
-    images: z.instanceof(FileList).optional()
+    // It should be .instanceOf(FileList) but is undefined for some reason
+    images: z.any().optional()
 })
 
 type model = z.infer<typeof model>

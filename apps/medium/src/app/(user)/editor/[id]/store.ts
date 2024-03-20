@@ -32,7 +32,9 @@ export const useCharacterEditor = (id: string) => {
         async queryFn() {
             if (!id) return
 
-            const { data, error } = await resonator.editor.character[id!].get()
+            const { data, error } = await resonator.editor
+                .character({ id })
+                .get()
 
             if (error) throw error
 
@@ -70,8 +72,9 @@ export const useCharacterEditor = (id: string) => {
         async mutationFn(input: form) {
             if (!id) return
 
-            const { data, error } =
-                await resonator.editor.character[id].patch(input)
+            const { data, error } = await resonator.editor
+                .character({ id })
+                .patch(input)
 
             queryClient.invalidateQueries({
                 queryKey: ['editor', 'character', 'get', id]

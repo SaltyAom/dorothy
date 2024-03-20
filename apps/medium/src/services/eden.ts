@@ -1,10 +1,10 @@
-import { edenTreaty } from '@elysiajs/eden'
+import { treaty } from '@elysiajs/eden'
 import type { app } from 'resonator'
 
-export const resonator = edenTreaty<app>(
+export const resonator = treaty<app>(
     process.env.NEXT_PUBLIC_RESONATOR ?? 'http://192.168.0.181:3001',
     {
-        $fetch: {
+        fetch: {
             credentials: 'include',
             next: { revalidate: 0 }
         }

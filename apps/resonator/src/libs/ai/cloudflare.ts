@@ -1,7 +1,7 @@
 // import { Ai } from '@cloudflare/ai'
 import { env } from '../env'
 import { Instruction, instruct } from './instruction'
-import { CharacterAI, Prompt } from './types'
+import { CharacterAI, Prompt, VisionMessage } from './types'
 
 const models = {
     llama: '@cf/meta/llama-2-7b-chat-fp16'
@@ -55,5 +55,9 @@ export class CloudflareAI implements CharacterAI {
         if (!response.success) throw response.errors[0]
 
         return response.result.response
+    }
+
+    async vision(messages: VisionMessage): Promise<string> {
+        throw new Error('Method not implemented.')
     }
 }

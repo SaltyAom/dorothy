@@ -1,44 +1,29 @@
-import { useEffect } from 'react'
-import { useParams } from 'next/navigation'
+'use client'
 
-import {
-    HydrationBoundary,
-    QueryClient,
-    dehydrate
-} from '@tanstack/react-query'
+import { HydrationBoundary, dehydrate, isServer } from '@tanstack/react-query'
 
 import { queryClient } from '@app/providers'
 import { Composer, Chat, Conversation } from '@modules/chat'
 import CleanUp from './clean-up'
 
-import { isServer, resonator } from '@services'
-import { useHydrateAtoms } from '@stores/jotai'
-import { characterIdAtom } from '@components/modules/chat/store'
+import { resonator } from '@services'
 
-export default async function Chatroom({
+export default function Chatroom({
     params: { id }
 }: {
     params: { id: string }
 }) {
-    const queryClient = new QueryClient({
-        defaultOptions: {
-            queries: {
-                refetchOnWindowFocus: false,
-                networkMode: 'offlineFirst'
+    if (!isServer)
+        queryClient.prefetchQuery({
+            queryKey: ['character', id],
+            async queryFn() {
+                const { data, error } = await resonator.character({ id }).get()
+
+                if (error) throw error
+
+                return data
             }
-        }
-    })
-
-    await queryClient.prefetchQuery({
-        queryKey: ['character', id],
-        async queryFn() {
-            const { data, error } = await resonator.character[id!].get()
-
-            if (error) throw error
-
-            return data
-        }
-    })
+        })
 
     return (
         <>

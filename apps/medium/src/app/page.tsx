@@ -14,8 +14,8 @@ export const metadata: Metadata = {
 }
 
 export default async function Index() {
-    const { data, error } = await resonator.character.list[1].get({
-        $fetch: {
+    const { data, error } = await resonator.character.list({ page: 1 }).get({
+        fetch: {
             next: { revalidate: 5 }
         }
     })

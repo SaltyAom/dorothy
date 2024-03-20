@@ -20,7 +20,7 @@ const TextArea = forwardRef<
     const [value, setValue] = useState('')
 
     useEffect(() => {
-        if (props.defaultValue) setValue(props.defaultValue)
+        if (props.defaultValue) setValue(props.defaultValue as string)
     }, [props.defaultValue])
 
     return (

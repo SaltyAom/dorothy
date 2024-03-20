@@ -6,7 +6,7 @@ import { libsql } from '@lucia-auth/adapter-sqlite'
 import { type Table, client } from '../database'
 import type { InferSelectModel } from 'drizzle-orm'
 
-export const Auth = Lucia<InferSelectModel<Table['user']>>({
+export const Auth = Lucia<InferSelectModel<Table['user']>, 'user', 'session'>({
     adapter: libsql(client, {
         user: 'user',
         session: 'user_session',

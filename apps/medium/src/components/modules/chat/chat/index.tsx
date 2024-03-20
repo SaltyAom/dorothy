@@ -1,9 +1,8 @@
 'use client'
 
-import { useEffect, useLayoutEffect } from 'react'
+import { useLayoutEffect } from 'react'
 
 import { motion, AnimatePresence } from 'framer-motion'
-import { useQuery } from '@tanstack/react-query'
 
 import Markdown from 'react-markdown'
 
@@ -68,7 +67,7 @@ function PlaceholderMessages({
 
 export default function Chat() {
     const { chats, isTyping, isChatLoading, chatError } = useChat()
-    const { character, isCharacterLoading } = useCharacter()
+    const { character } = useCharacter()
     const { isUserLoading, user } = useUser()
     const [conversationId] = useConversationId()
 

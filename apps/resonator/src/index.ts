@@ -8,8 +8,8 @@ const app = new Elysia()
     .use(
         cors({
             credentials: true,
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'],
-            allowedHeaders: ['Content-Type']
+            allowedHeaders: ['Content-Type', 'Set-Cookie'],
+            origin: true
         })
     )
     .use(admin)

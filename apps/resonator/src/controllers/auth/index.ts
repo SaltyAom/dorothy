@@ -1,17 +1,12 @@
 import { Elysia, t } from 'elysia'
-import { rateLimit } from 'elysia-rate-limit'
-import { createInsertSchema } from 'drizzle-typebox'
 
-import { bearer } from '@elysiajs/bearer'
-
-import { Auth, dream } from '@resonator/libs'
+import { dream, ElyAuth } from '@resonator/libs'
 
 export const auth = new Elysia({
     name: '@controller/auth',
     prefix: '/auth'
 })
-    .use(bearer())
-    .use(Auth.elysia)
+    .use(ElyAuth)
     .guard(
         {
             body: t.Object({

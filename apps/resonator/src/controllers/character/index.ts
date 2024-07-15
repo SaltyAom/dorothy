@@ -1,4 +1,4 @@
-import { Elysia, error, t } from 'elysia'
+import { Elysia, t } from 'elysia'
 import { rateLimit } from 'elysia-rate-limit'
 
 import { ElyAuth, dream } from '@resonator/libs'
@@ -32,13 +32,11 @@ export const character = new Elysia({
         '/:id',
         {
             isSignIn: true,
-            async beforeHandle({ params: { id }, set }) {
+            beforeHandle: async function checkCharacterExistence({ params: { id }, set, error }) {
                 const character = await dream.character.exists(id)
 
-                if (!character) {
-                    set.status = 'Bad Request'
-                    throw new Error('Character not found')
-                }
+                if (!character)
+                	return error('Bad Request', 'Character not found')
             }
         },
         (app) =>
@@ -84,7 +82,7 @@ export const character = new Elysia({
                 )
                 .post(
                     '/chat',
-                    async ({ user, body, params: { id: characterId } }) =>
+                    async ({ user, body, params: { id: characterId }, trace }) =>
                         dream.conversation.chat({
                             userId: await user.id,
                             characterId,

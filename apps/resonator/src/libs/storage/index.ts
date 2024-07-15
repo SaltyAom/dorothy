@@ -2,6 +2,7 @@ import { Elysia } from 'elysia'
 
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { env } from '../env'
+import { record } from '../tracing'
 
 const s3Client = new S3Client({
     region: 'auto',
@@ -13,6 +14,7 @@ const s3Client = new S3Client({
 })
 
 export abstract class Storage {
+	@record()
     static async upload(
         file?: Blob | File | null,
         {
@@ -60,6 +62,7 @@ export abstract class Storage {
         return `${env.R2_PUBLIC}/${Key}`
     }
 
+    @record()
     static async uploadMultiple(
         files?: (string | Blob | File | null)[],
         {

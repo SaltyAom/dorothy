@@ -4,10 +4,11 @@ import {
     HarmCategory
 } from '@google/generative-ai'
 
-import { instruct, gptToGemini, Instruction } from './instruction'
+import { instruct } from './instruction'
 import { env } from '../env'
+import { record } from '../tracing'
 
-import { CharacterAI, Message, Prompt, VisionMessage } from './types'
+import { CharacterAI, Message, VisionMessage } from './types'
 
 const genAI = new GoogleGenerativeAI(env.GEMINI)
 const safety = [
@@ -42,12 +43,19 @@ const vision = genAI.getGenerativeModel({
     model: 'gemini-pro-vision'
 })
 
-export class Gemini implements CharacterAI {
+export class Gemini extends CharacterAI {
+	constructor() {
+		super()
+	}
+
+    @record()
     async chat({ content, images, ...instruction }: Message) {
-        const history = instruct({
-            ...instruction,
-            model: 'gemini'
-        })
+        const history = this.record('instruct', () =>
+            instruct({
+                ...instruction,
+                model: 'gemini'
+            })
+        )
 
         if (images?.length)
             content =
@@ -55,17 +63,18 @@ export class Gemini implements CharacterAI {
                 '\nImages description: ' +
                 (await this.vision({ images, content }))
 
-        const chat = await model.startChat({
+        const chat =  model.startChat({
             history
             // safetySettings: safety
         })
 
-        const { response } = await chat.sendMessage(content)
+        const { response } = await this.record('generateResponse', () => chat.sendMessage(content))
         const sentence = response.text()
 
         return sentence
     }
 
+    @record()
     async vision({ images, content }: VisionMessage) {
         const buffers = await Promise.all(
             images.map(async (image) => ({

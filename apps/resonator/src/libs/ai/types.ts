@@ -1,4 +1,6 @@
+import { getTracer, type StartActiveSpan } from '@elysiajs/opentelemetry'
 import type { Instruction } from './instruction'
+import { traceMethod } from '../tracing'
 
 export type Models = 'GPT' | 'gemini'
 
@@ -9,7 +11,9 @@ export type Prompt<Model extends Models = 'gemini'> = Model extends 'GPT'
       }
     : {
           role: 'model' | 'user'
-          parts: string
+          parts: {
+              text: string
+          }[]
       }
 
 export type Message = Omit<Instruction<any>, 'model'> & {
@@ -24,7 +28,12 @@ export type VisionMessage = {
 }
 
 export abstract class CharacterAI {
-    abstract chat(messages: Message): Promise<string>
+    constructor() {
+        this.record = traceMethod
+    }
 
+    record: typeof traceMethod
+
+    abstract chat(messages: Message): Promise<string>
     abstract vision(messages: VisionMessage): Promise<string>
 }

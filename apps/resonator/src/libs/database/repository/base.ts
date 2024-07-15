@@ -1,3 +1,4 @@
+import { traceMethod } from '../../tracing'
 import { database } from '../connection'
 
 export abstract class DreamRepository {
@@ -6,7 +7,11 @@ export abstract class DreamRepository {
         public config: {
             batchSize: number
         } = { batchSize: 25 }
-    ) {}
+    ) {
+    	this.record = traceMethod.bind(this)
+    }
+
+    record: typeof traceMethod
 
     protected batch(batch: number) {
         return (batch - 1) * this.config.batchSize

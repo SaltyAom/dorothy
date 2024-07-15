@@ -14,7 +14,7 @@
     "lint": "eslint 'src/**/*.{ts,tsx}'"
   },
   "dependencies": {
-    "@elysiajs/eden": "^1.0.0-rc.1",
+    "@elysiajs/eden": "^1.1.0-rc.1",
     "@hookform/resolvers": "^3.3.3",
     "@iconify/react": "^4.1.1",
     "@radix-ui/react-slot": "^1.0.2",
@@ -24,7 +24,7 @@
     "@vercel/og": "^0.5.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "elysia": "^1.0.7",
+    "elysia": "^1.1.0-rc.12",
     "framer-motion": "^10.16.16",
     "jotai": "^2.6.1",
     "lucide-react": "^0.302.0",

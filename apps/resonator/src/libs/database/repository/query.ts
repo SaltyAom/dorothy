@@ -3,12 +3,11 @@ import { t, error } from 'elysia'
 import { DreamRepository } from './base'
 import { DreamEditor } from './editor'
 
-import { and, desc, eq, or } from 'drizzle-orm/sql'
-import type { InferInsertModel } from 'drizzle-orm/table'
+import { and, desc, eq } from 'drizzle-orm/sql'
 import { createInsertSchema } from 'drizzle-typebox'
 
-import { AI, Storage, instruct } from '@resonator/libs'
-import { Table, conversation } from '../table'
+import { AI, Storage, Table, record } from '@resonator/libs'
+import { getTracer } from '@elysiajs/opentelemetry'
 
 class User extends DreamRepository {
     schema = {
@@ -19,6 +18,7 @@ class User extends DreamRepository {
         })
     } as const
 
+    @record()
     by(id: string) {
         return this.db.query.user
             .findFirst({
@@ -27,38 +27,44 @@ class User extends DreamRepository {
             .execute()
     }
 
+    @record()
     async update(
         id: string,
         { profile, ...data }: Partial<typeof this.schema.profile>
     ) {
-        const user = await this.db.query.user
-            .findFirst({
-                columns: {
-                    username: true
-                },
-                where: eq(Table.user.id, id)
-            })
-            .execute()
+        const user = await this.record('findExistingUser', () =>
+            this.db.query.user
+                .findFirst({
+                    columns: {
+                        username: true
+                    },
+                    where: eq(Table.user.id, id)
+                })
+                .execute()
+        )
 
         if (!user) throw new Error('User not found')
 
-        return this.db
-            .update(Table.user)
-            .set({
-                profile: await Storage.upload(profile, {
-                    name: user.username,
-                    prefix: 'profile/'
-                }),
-                ...data
-            })
-            .where(eq(Table.user.id, id))
-            .returning()
-            .execute()
-            .then(this.toOne)
+        return this.record('updateUser', async () =>
+            this.db
+                .update(Table.user)
+                .set({
+                    profile: await Storage.upload(profile, {
+                        name: user.username,
+                        prefix: 'profile/'
+                    }),
+                    ...data
+                })
+                .where(eq(Table.user.id, id))
+                .returning()
+                .execute()
+                .then(this.toOne)
+        )
     }
 }
 
 class Character extends DreamRepository {
+    @record()
     list<T extends boolean = false>(
         page: number,
         {
@@ -82,6 +88,7 @@ class Character extends DreamRepository {
             .execute()
     }
 
+    @record()
     byId<T extends boolean = false>(
         id: string,
         {
@@ -118,6 +125,7 @@ class Character extends DreamRepository {
             })
     }
 
+    @record()
     async getRooms(userId: string, page = 1) {
         return this.db.query.room
             .findMany({
@@ -140,6 +148,7 @@ class Character extends DreamRepository {
             .execute()
     }
 
+    @record()
     exists(id: string) {
         return this.db.query.character
             .findFirst({
@@ -151,6 +160,7 @@ class Character extends DreamRepository {
             .execute()
     }
 
+    @record()
     byName(name: string) {
         return this.db.query.character
             .findFirst({
@@ -161,6 +171,7 @@ class Character extends DreamRepository {
 }
 
 class Conversation extends DreamRepository {
+    @record()
     getRoom(userId: string, characterId: string) {
         return this.db.query.room
             .findFirst({
@@ -179,6 +190,7 @@ class Conversation extends DreamRepository {
             .execute()
     }
 
+    @record()
     getRooms(userId: string, characterId: string) {
         return this.db.query.room
             .findMany({
@@ -194,6 +206,7 @@ class Conversation extends DreamRepository {
             .execute()
     }
 
+    @record()
     async getConversations(userId: string, characterId: string) {
         return this.db.query.room.findFirst({
             where: and(
@@ -219,6 +232,7 @@ class Conversation extends DreamRepository {
         })
     }
 
+    @record()
     async createNewConversation(userId: string, characterId: string) {
         const { id: roomId } = await this.createRoom(userId, characterId)
         const { id: activeId } = await this.createConversation(roomId)
@@ -228,20 +242,23 @@ class Conversation extends DreamRepository {
         return activeId
     }
 
+    @record()
     async getActiveConversation(userId: string, characterId: string) {
         return this.db.transaction(async (db) => {
-            let active = await this.db.query.room
-                .findFirst({
-                    columns: {
-                        active: true
-                    },
-                    where: and(
-                        eq(Table.room.userId, userId),
-                        eq(Table.room.characterId, characterId)
-                    )
-                })
-                .execute()
-                .then((room) => room?.active)
+            let active = await this.record('findActiveConversation', () =>
+                this.db.query.room
+                    .findFirst({
+                        columns: {
+                            active: true
+                        },
+                        where: and(
+                            eq(Table.room.userId, userId),
+                            eq(Table.room.characterId, characterId)
+                        )
+                    })
+                    .execute()
+                    .then((room) => room?.active)
+            )
 
             if (!active)
                 active = await this.createNewConversation(userId, characterId)
@@ -250,6 +267,7 @@ class Conversation extends DreamRepository {
         })
     }
 
+    @record()
     async getMessages(conversationId: string) {
         return this.db.query.chat
             .findMany({
@@ -259,6 +277,7 @@ class Conversation extends DreamRepository {
             .execute()
     }
 
+    @record()
     async setActiveConversation(
         userId: string,
         characterId: string,
@@ -270,20 +289,22 @@ class Conversation extends DreamRepository {
         } = {}
     ) {
         if (validate) {
-            const data = await this.db.query.conversation
-                .findFirst({
-                    where: eq(Table.conversation.id, conversationId),
-                    columns: {},
-                    with: {
-                        room: {
-                            columns: {
-                                characterId: true,
-                                active: true
+            const data = await this.record('validateActiveConversation', () =>
+                this.db.query.conversation
+                    .findFirst({
+                        where: eq(Table.conversation.id, conversationId),
+                        columns: {},
+                        with: {
+                            room: {
+                                columns: {
+                                    characterId: true,
+                                    active: true
+                                }
                             }
                         }
-                    }
-                })
-                .execute()
+                    })
+                    .execute()
+            )
 
             if (
                 !data ||
@@ -293,49 +314,57 @@ class Conversation extends DreamRepository {
                 return
         }
 
-        return this.db
-            .update(Table.room)
-            .set({
-                active: conversationId
-            })
-            .where(
-                and(
-                    eq(Table.room.userId, userId),
-                    eq(Table.room.characterId, characterId)
+        return this.record('updateActiveConversation', () =>
+            this.db
+                .update(Table.room)
+                .set({
+                    active: conversationId
+                })
+                .where(
+                    and(
+                        eq(Table.room.userId, userId),
+                        eq(Table.room.characterId, characterId)
+                    )
                 )
-            )
-            .execute()
+                .execute()
+        )
     }
 
+    @record()
     async createRoom(userId: string, characterId: string) {
-        const room = await this.db.query.room
-            .findFirst({
-                columns: {
-                    id: true
-                },
-                where: and(
-                    eq(Table.room.userId, userId),
-                    eq(Table.room.characterId, characterId)
-                )
-            })
-            .execute()
+        const room = await this.record('getCurrentRoom', () =>
+            this.db.query.room
+                .findFirst({
+                    columns: {
+                        id: true
+                    },
+                    where: and(
+                        eq(Table.room.userId, userId),
+                        eq(Table.room.characterId, characterId)
+                    )
+                })
+                .execute()
+        )
 
         if (room) return room
 
-        return this.db
-            .insert(Table.room)
-            .values({
-                userId,
-                characterId
-            })
-            .onConflictDoNothing()
-            .returning({
-                id: Table.room.id
-            })
-            .execute()
-            .then(this.toOne)
+        return this.record('createNewRoom', () =>
+            this.db
+                .insert(Table.room)
+                .values({
+                    userId,
+                    characterId
+                })
+                .onConflictDoNothing()
+                .returning({
+                    id: Table.room.id
+                })
+                .execute()
+                .then(this.toOne)
+        )
     }
 
+    @record()
     createConversation(roomId: string) {
         return this.db
             .insert(Table.conversation)
@@ -349,6 +378,7 @@ class Conversation extends DreamRepository {
             .then(this.toOne)
     }
 
+    @record()
     async getChats(userId: string, characterId: string) {
         const conversationId = await this.getActiveConversation(
             userId,
@@ -358,31 +388,34 @@ class Conversation extends DreamRepository {
         return this.getChatsById(userId, characterId, conversationId)
     }
 
+    @record()
     async getChatsById(
         userId: string,
         characterId: string,
         conversationId: string
     ) {
-        const data = await this.db.query.conversation.findFirst({
-            columns: {},
-            with: {
-                room: {
-                    columns: {
-                        id: true
+        const data = await this.record('findActiveConversation', () =>
+            this.db.query.conversation.findFirst({
+                columns: {},
+                with: {
+                    room: {
+                        columns: {
+                            id: true
+                        }
+                    },
+                    chats: {
+                        columns: {
+                            id: true,
+                            createdAt: true,
+                            content: true,
+                            role: true,
+                            images: true
+                        }
                     }
                 },
-                chats: {
-                    columns: {
-                        id: true,
-                        createdAt: true,
-                        content: true,
-                        role: true,
-                        images: true
-                    }
-                }
-            },
-            where: eq(Table.conversation.id, conversationId)
-        })
+                where: eq(Table.conversation.id, conversationId)
+            })
+        )
 
         if (!data) return []
 
@@ -399,6 +432,7 @@ class Conversation extends DreamRepository {
         }))
     }
 
+    @record()
     async chat({
         userId,
         characterId,
@@ -423,8 +457,6 @@ class Conversation extends DreamRepository {
 
         if (!character) throw error('Bad Request', 'Character not found')
 
-        const { instruction, greeting } = character
-
         const conversationId =
             userConversationId ||
             (await this.getActiveConversation(userId, characterId))
@@ -443,7 +475,10 @@ class Conversation extends DreamRepository {
         if (!Array.isArray(previousChats))
             throw error('Unauthorized', 'You do not own this conversation')
 
-        const [sentence, imagesLink] = await Promise.all([
+        const [imagesLink, sentence] = await Promise.all([
+            Storage.uploadMultiple(images, {
+                prefix: `uploads/${characterId}`
+            }),
             AI.gemini.chat({
                 name: character.name,
                 character: character.instruction,
@@ -452,59 +487,55 @@ class Conversation extends DreamRepository {
                 chats: previousChats,
                 content,
                 images
-            }),
-            await Storage.uploadMultiple(images, {
-                prefix: `uploads/${characterId}`
             })
         ])
 
         const saveChat = (id = conversationId) => {
-            this.db
-                .update(Table.conversation)
-                .set({
-                    updatedAt: now
-                })
-                .where(eq(Table.conversation.id, id))
-                .returning({
-                    roomId: Table.conversation.roomId
-                })
-                .execute()
-                .then((conversations) =>
-                    conversations.forEach((conversation) => {
-                        if (!conversation) return
-
-                        this.db
-                            .update(Table.room)
-                            .set({
-                                updatedAt: now
-                            })
-                            .where(
-                                eq(
-                                    Table.conversation.roomId,
-                                    conversation.roomId
-                                )
-                            )
-                            .execute()
+            this.record('updateAvailableChatRoom', () =>
+                this.db
+                    .update(Table.conversation)
+                    .set({
+                        updatedAt: now
                     })
-                )
+                    .where(eq(Table.conversation.id, id))
+                    .returning({
+                        roomId: Table.conversation.roomId
+                    })
+                    .execute()
+                    .then((conversations) =>
+                        conversations.forEach((conversation) => {
+                            if (!conversation) return
 
-            return this.db
-                .insert(Table.chat)
-                .values([
-                    {
-                        conversationId: id,
-                        role: 'user',
-                        content,
-                        createdAt: now,
-                        images: imagesLink?.join(',')
-                    },
-                    {
-                        conversationId: id,
-                        role: 'assistant',
-                        content: sentence
-                    }
-                ])
-                .execute()
+                            this.db
+                                .update(Table.room)
+                                .set({
+                                    updatedAt: now
+                                })
+                                .where(eq(Table.room.id, conversation.roomId))
+                                .execute()
+                        })
+                    )
+            )
+
+            return this.record('saveChatMessage', () =>
+                this.db
+                    .insert(Table.chat)
+                    .values([
+                        {
+                            conversationId: id,
+                            role: 'user',
+                            content,
+                            createdAt: now,
+                            images: imagesLink?.join(',')
+                        },
+                        {
+                            conversationId: id,
+                            role: 'assistant',
+                            content: sentence
+                        }
+                    ])
+                    .execute()
+            )
         }
 
         try {

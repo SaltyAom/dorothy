@@ -10,22 +10,21 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.481.0",
     "@cloudflare/ai": "^1.0.47",
-    "@elysiajs/cors": "^1.1.0-rc.1",
+    "@elysiajs/cors": "^1.1.0",
     "@elysiajs/lucia-auth": "1.1.0-rc.0",
-    "@elysiajs/opentelemetry": "^1.1.0-rc.3",
-    "@elysiajs/swagger": "^1.1.0-rc.1",
+    "@elysiajs/opentelemetry": "^1.1.1",
+    "@elysiajs/server-timing": "^1.1.0",
+    "@elysiajs/swagger": "^1.1.0",
     "@google/generative-ai": "^0.14.1",
     "@libsql/client": "^0.7.0",
     "@lucia-auth/adapter-sqlite": "^2.0.1",
     "@paralleldrive/cuid2": "^2.2.2",
-    "better-sqlite3": "^11.1.2",
     "drizzle-orm": "^0.32.0",
     "drizzle-typebox": "^0.1.1",
-    "elysia": "1.1.0-rc.12",
+    "elysia": "1.1.4",
     "elysia-rate-limit": "^2.0.1"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.8",
     "bun-types": "latest",
     "drizzle-kit": "^0.20.8"
   },

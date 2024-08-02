@@ -14,17 +14,18 @@ const app = new Elysia()
     .use(admin)
     .use(auth)
     .use(character)
+    .use(app => {
+    	if (process.env.NODE_ENV !== 'production') return app.use(swagger())
 
-// console.log(app.routes.find(x => x.path === '/auth/profile')?.composed?.toString())
-
-if (process.env.NODE_ENV !== 'production') app.use(swagger())
-
-console.log('took', performance.now() - t1)
+        return app
+    })
 
 app.listen({
     port: process.env.PORT ?? 3001,
     hostname: '0.0.0.0'
 })
+
+console.log("Resonator took", performance.now() - t1, "ms")
 
 export type app = typeof app
 

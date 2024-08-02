@@ -1,27 +1,36 @@
-FROM oven/bun:1.0.20 as base
+FROM oven/bun:1.1.21 as build
 
 WORKDIR /app
 
 COPY apps/resonator/package.json package.json
+COPY bun.lockb bun.lockb
 
 RUN bun install
-
-# ? -------------------------
-FROM oven/bun:1.0.20
-
-WORKDIR /app
-
-COPY --from=base /app/node_modules node_modules
-COPY --from=base /app/package.json package.json
 
 COPY /apps/resonator/src apps/resonator/src
 COPY /apps/resonator/tsconfig.json apps/resonator/tsconfig.json
 COPY tsconfig.json tsconfig.json
 
 ENV NODE_ENV production
-ENV ENV production
+
+RUN bun build --compile --minify apps/resonator/src/index.ts --outfile resonator
+
+RUN rm -rf node_modules && rm -f bun.lockb
+
+COPY apps/resonator/package.docker.json package.json
+RUN bun install
+RUN bun install --production
+
+# -----------
+FROM debian:bullseye-slim
+
+COPY --from=build /app/resonator resonator
+COPY --from=build /app/node_modules node_modules
+# COPY apps/resonator/.env .env
+
+ENV NODE_ENV production
 ENV PORT 3001
 
-CMD ["bun", "apps/resonator/src/index.ts"]
+CMD ["./resonator"]
 
 EXPOSE 3001

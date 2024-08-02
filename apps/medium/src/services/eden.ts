@@ -11,3 +11,8 @@ export const resonator = treaty<app>(
     }
 )
 export type resonator = typeof resonator
+
+resonator.character({ id: '123' }).chat.post({
+	conversationId: '123',
+	'content': 'awd'
+})

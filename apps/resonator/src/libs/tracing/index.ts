@@ -8,13 +8,17 @@ export const tracing = new Elysia({ name: 'tracing' }).use(
     opentelemetry({
         spanProcessors: [
             new BatchSpanProcessor(
-                new OTLPTraceExporter({
-                    url: 'https://api.axiom.co/v1/traces',
-                    headers: {
-                        Authorization: `Bearer ${Bun.env.AXIOM_KEY}`,
-                        'X-Axiom-Dataset': Bun.env.AXIOM_DATASET
-                    }
-                })
+                new OTLPTraceExporter(
+                    process.env.NODE_ENV === 'production'
+                        ? {
+                              url: 'https://api.axiom.co/v1/traces',
+                              headers: {
+                                  Authorization: `Bearer ${Bun.env.AXIOM_KEY}`,
+                                  'X-Axiom-Dataset': Bun.env.AXIOM_DATASET
+                              }
+                          }
+                        : {}
+                )
             )
         ]
     })
@@ -22,6 +26,8 @@ export const tracing = new Elysia({ name: 'tracing' }).use(
 
 export function record(name?: string) {
     return function decorator(_instance: unknown, _method: unknown) {
+        return _instance
+
         const instance = _instance as Record<string, unknown>
         const method = _method as string
 

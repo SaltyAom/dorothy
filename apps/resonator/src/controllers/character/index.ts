@@ -1,6 +1,4 @@
 import { Elysia, t } from 'elysia'
-import { rateLimit } from 'elysia-rate-limit'
-
 import { ElyAuth, dream } from '@resonator/libs'
 
 export const character = new Elysia({
@@ -8,22 +6,24 @@ export const character = new Elysia({
     prefix: '/character'
 })
     .use(ElyAuth)
-    .get('/list/:page', ({ params: { page } }) => dream.character.list(page), {
+    .get('/list/:page?', ({ params: { page } }) => dream.character.list(page), {
         params: t.Object({
             page: t.Numeric({
-                minimum: 1
+                minimum: 1,
+                default: 1
             })
         })
     })
     .get(
-        '/room/:page',
+        '/room/:page?',
         async ({ user, params: { page } }) =>
             dream.character.getRooms(await user.id, page),
         {
             isSignIn: true,
             params: t.Object({
                 page: t.Numeric({
-                    minimum: 1
+                    minimum: 1,
+                    default: 1
                 })
             })
         }

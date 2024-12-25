@@ -10,23 +10,28 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.481.0",
     "@cloudflare/ai": "^1.0.47",
-    "@elysiajs/cors": "^1.1.0",
+    "@elysiajs/cors": "1.2.0",
     "@elysiajs/lucia-auth": "1.1.0-rc.0",
-    "@elysiajs/opentelemetry": "^1.1.1",
-    "@elysiajs/server-timing": "^1.1.0",
-    "@elysiajs/swagger": "^1.1.0",
+    "@elysiajs/opentelemetry": "1.2.0",
+    "@elysiajs/server-timing": "1.2.0",
+    "@elysiajs/swagger": "1.2.0",
     "@google/generative-ai": "^0.14.1",
     "@libsql/client": "^0.7.0",
     "@lucia-auth/adapter-sqlite": "^2.0.1",
     "@paralleldrive/cuid2": "^2.2.2",
-    "drizzle-orm": "^0.32.0",
-    "drizzle-typebox": "^0.1.1",
-    "elysia": "1.1.4",
-    "elysia-rate-limit": "^2.0.1"
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.38.3",
+    "drizzle-typebox": "^0.2.1",
+    "elysia": "1.2.6",
+    "elysia-rate-limit": "^4.1.0"
+  },
+  "overrides": {
+    "elysia": "1.1.27"
   },
   "devDependencies": {
     "bun-types": "latest",
-    "drizzle-kit": "^0.20.8"
+    "drizzle-kit": "^0.20.8",
+    "esbuild": "^0.24.0"
   },
   "module": "src/index.ts",
   "types": "src/index.ts"

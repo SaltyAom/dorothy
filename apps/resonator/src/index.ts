@@ -14,8 +14,8 @@ const app = new Elysia()
     .use(admin)
     .use(auth)
     .use(character)
-    .use(app => {
-    	if (process.env.NODE_ENV !== 'production') return app.use(swagger())
+    .use((app) => {
+        if (process.env.NODE_ENV !== 'production') return app.use(swagger())
 
         return app
     })
@@ -25,7 +25,7 @@ app.listen({
     hostname: '0.0.0.0'
 })
 
-console.log("Resonator took", performance.now() - t1, "ms")
+console.log('Resonator took', performance.now() - t1, 'ms')
 
 export type app = typeof app
 

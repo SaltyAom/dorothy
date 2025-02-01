@@ -11,7 +11,7 @@
     "@aws-sdk/client-s3": "^3.481.0",
     "@cloudflare/ai": "^1.0.47",
     "@elysiajs/cors": "1.2.0",
-    "@elysiajs/lucia-auth": "1.1.0-rc.0",
+    "@elysiajs/lucia-auth": "1.2.0",
     "@elysiajs/opentelemetry": "1.2.0",
     "@elysiajs/server-timing": "1.2.0",
     "@elysiajs/swagger": "1.2.0",

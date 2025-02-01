@@ -3,11 +3,15 @@ import { Elysia, error } from 'elysia'
 import { Lucia } from '@elysiajs/lucia-auth'
 import { libsql } from '@lucia-auth/adapter-sqlite'
 
-import { type Table, client } from '../database'
-import type { InferSelectModel } from 'drizzle-orm'
 import { tracing } from '../tracing'
+import { client, type Table } from '../database'
+import type { InferSelectModel } from 'drizzle-orm'
 
-export const Auth = Lucia<InferSelectModel<Table['user']>, 'user', 'session'>({
+type Attributes = InferSelectModel<Table['user']>
+
+export const Auth = Lucia<Attributes, 'user', 'session'>({
+    name: 'user',
+    session: 'session',
     adapter: libsql(client, {
         user: 'user',
         session: 'user_session',
@@ -29,16 +33,13 @@ export const Auth = Lucia<InferSelectModel<Table['user']>, 'user', 'session'>({
 export const ElyAuth = new Elysia({ name: '@services/auth' })
     .use(Auth.elysia)
     .use(tracing)
-    .macro(({ onBeforeHandle }) => {
-        return {
-            role(role: InferSelectModel<Table['user']>['role']) {
-                onBeforeHandle(async function validateRole({ user }) {
-                    await user.validate()
-                    const { role } = await user.profile
+    .macro({
+        role: (role: InferSelectModel<Table['user']>['role']) => ({
+            async beforeHandle({ user }) {
+                await user.validate()
+                const { role } = await user.profile
 
-                    if (role !== role)
-                        return error('Unauthorized', 'Unauthorized')
-                })
+                if (role !== role) return error('Unauthorized', 'Unauthorized')
             }
-        }
+        })
     })

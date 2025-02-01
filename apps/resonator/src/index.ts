@@ -15,7 +15,7 @@ const app = new Elysia()
     .use(auth)
     .use(character)
     .use((app) => {
-        // if (process.env.NODE_ENV !== 'production') return app.use(swagger())
+        if (process.env.NODE_ENV !== 'production') return app.use(swagger())
 
         return app
     })

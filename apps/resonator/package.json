@@ -22,11 +22,11 @@
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.38.3",
     "drizzle-typebox": "^0.2.1",
-    "elysia": "1.2.6",
+    "elysia": "1.2.11",
     "elysia-rate-limit": "^4.1.0"
   },
   "overrides": {
-    "elysia": "1.1.27"
+    "elysia": "1.2.11"
   },
   "devDependencies": {
     "bun-types": "latest",

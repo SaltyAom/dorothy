@@ -24,7 +24,7 @@
     "@vercel/og": "^0.5.20",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
-    "elysia": "^1.2.6",
+    "elysia": "1.2.11",
     "framer-motion": "^10.16.16",
     "jotai": "^2.6.1",
     "lucide-react": "^0.302.0",

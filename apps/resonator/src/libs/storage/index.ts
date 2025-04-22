@@ -33,7 +33,8 @@ export abstract class Storage {
 
         if (prefix.startsWith('/')) prefix = prefix.substring(1)
 
-        const Key = prefix + (name ?? file.name)
+        // @ts-ignore
+        const Key = prefix + (name ?? file?.name)
 
         const Body = new Uint8Array(await file.arrayBuffer())
 
@@ -86,6 +87,7 @@ export abstract class Storage {
                 continue
             }
 
+            // @ts-ignore
             const Key = prefix + (name ?? file.name ?? `${Date.now()}.jpg`)
 
             try {

@@ -20,6 +20,8 @@ export default async function Index() {
         }
     })
 
+    console.log({ error })
+
     if (error)
         return (
             <h1 className="flex justify-center items-center w-full h-screen text-4xl text-lime-800">

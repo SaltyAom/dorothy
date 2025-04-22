@@ -37,9 +37,9 @@ export const ElyAuth = new Elysia({ name: '@services/auth' })
         role: (role: InferSelectModel<Table['user']>['role']) => ({
             async beforeHandle({ user }) {
                 await user.validate()
-                const { role } = await user.profile
+                const { role: userRole } = await user.profile
 
-                if (role !== role) return error('Unauthorized', 'Unauthorized')
+                if (role !== userRole) return error('Unauthorized', 'Unauthorized')
             }
         })
     })

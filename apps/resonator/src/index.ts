@@ -6,10 +6,10 @@ import { swagger } from '@elysiajs/swagger'
 import { cors } from '@elysiajs/cors'
 
 import { auth, admin, character } from './controllers'
-import { tracing } from './libs'
+// import { tracing } from './libs'
 
 const app = new Elysia()
-    .use(tracing)
+    // .use(tracing)
     .use(cors())
     .use(admin)
     .use(auth)
@@ -20,12 +20,12 @@ const app = new Elysia()
         return app
     })
 
+console.log('Resonator took', performance.now() - t1, 'ms')
+
 app.listen({
     port: process.env.PORT ?? 3001,
     hostname: '0.0.0.0'
 })
-
-console.log('Resonator took', performance.now() - t1, 'ms')
 
 export type app = typeof app
 

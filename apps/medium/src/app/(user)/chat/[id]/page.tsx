@@ -9,7 +9,11 @@ import { queryClient } from '@app/providers'
 import { Composer, Chat, Conversation } from '@modules/chat'
 import CleanUp from './clean-up'
 
-export default function Chatroom({ params }: { params: { id: string } }) {
+export default function Chatroom({
+    params
+}: {
+    params: Promise<{ id: string }>
+}) {
     const { id } = use(params)
 
     if (!isServer)

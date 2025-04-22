@@ -11,7 +11,7 @@ import { fileListToBase64, useChat } from '../store'
 import { Textarea } from '@shared'
 
 const model = z.object({
-    content: z.string().min(5),
+    content: z.string(),
     // It should be .instanceOf(FileList) but is undefined for some reason
     images: z.any().optional()
 })
@@ -59,9 +59,8 @@ export default function Composer() {
                 })}
                 onKeyDown={(event) => {
                     if (event.key === 'Enter') {
-                        if (event.shiftKey || event.ctrlKey || event.metaKey)
-                            event.preventDefault()
-                        else {
+                        if (event.shiftKey || event.ctrlKey || event.metaKey) {
+                        } else {
                             ;(
                                 event.currentTarget as HTMLFormElement
                             ).requestSubmit()

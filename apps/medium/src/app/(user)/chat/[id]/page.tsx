@@ -1,19 +1,16 @@
 'use client'
 
+import { use } from 'react'
+
 import { HydrationBoundary, dehydrate, isServer } from '@tanstack/react-query'
+import { resonator } from '@services'
 
 import { queryClient } from '@app/providers'
 import { Composer, Chat, Conversation } from '@modules/chat'
 import CleanUp from './clean-up'
 
-import { resonator } from '@services'
-
-export default async function Chatroom({
-    params
-}: {
-    params: Promise<{ id: string }>
-}) {
-    const { id } = await params
+export default function Chatroom({ params }: { params: { id: string } }) {
+    const { id } = use(params)
 
     if (!isServer)
         queryClient.prefetchQuery({

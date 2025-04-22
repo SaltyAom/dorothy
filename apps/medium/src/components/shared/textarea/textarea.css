@@ -1,16 +1,16 @@
 @reference 'tailwindcss';
 
 .expanding-textarea {
-    @apply relative grid w-full;
+    @apply relative grid w-full px-0.5;
 }
 
 .expanding-textarea::after {
-    @apply whitespace-pre-wrap invisible px-3.5 py-2 break-all max-w-full;
+    @apply whitespace-pre-wrap invisible break-all max-w-full;
     content: attr(data-replicated-value) ' ';
 }
 
 .expanding-textarea > textarea {
-    @apply resize-none overflow-hidden;
+    @apply resize-none overflow-hidden outline-none focus:ring-0;
 }
 
 .expanding-textarea::after,

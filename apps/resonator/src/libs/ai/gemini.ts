@@ -36,7 +36,7 @@ const safety = [
 
 const model = genAI.getGenerativeModel({
     model: 'gemini-2.5-flash-preview-04-17',
-    safetySettings: safety
+    // safetySettings: safety
 })
 
 export class Gemini extends CharacterAI {

@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.2 AS base
+FROM oven/bun:1.2.10 AS base
 
 COPY --from=node:22 /usr/local/bin/node /usr/local/bin/node
 
@@ -17,8 +17,8 @@ COPY apps/resonator/.env.example apps/resonator/.env
 COPY apps/resonator/.env.example .env
 
 EXPOSE 3001
-ENV RESONATOR https://resonator.gehenna.sh
-ENV NEXT_PUBLIC_RESONATOR https://resonator.gehenna.sh
+ENV RESONATOR=https://resonator.gehenna.sh
+ENV NEXT_PUBLIC_RESONATOR=https://resonator.gehenna.sh
 
 RUN bun apps/resonator/src/index.ts &
 RUN cd apps/medium && bun run build

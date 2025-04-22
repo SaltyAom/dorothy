@@ -1,4 +1,4 @@
-FROM oven/bun:1.2.2 as build
+FROM oven/bun:1.2.2 AS build
 
 WORKDIR /app
 
@@ -13,14 +13,7 @@ COPY tsconfig.json tsconfig.json
 
 ENV NODE_ENV production
 
-RUN bun build \
-	--compile \
-	--minify \
-	--target bun-linux-x64 \
-	--outfile server \
-	./src/index.ts
-
-RUN bun build --compile --minify apps/resonator/src/index.ts --outfile resonator
+RUN bun build --compile --minify-whitespace --minify-syntax --target bun-linux-x64 --outfile resonator apps/resonator/src/index.ts
 
 RUN rm -rf node_modules && rm -f bun.lock
 
@@ -35,8 +28,8 @@ COPY --from=build /app/resonator resonator
 COPY --from=build /app/node_modules node_modules
 # COPY apps/resonator/.env .env
 
-ENV NODE_ENV production
-ENV PORT 3001
+ENV NODE_ENV=production
+ENV PORT=3001
 
 CMD ["./resonator"]
 

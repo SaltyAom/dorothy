@@ -35,18 +35,14 @@ const safety = [
 ]
 
 const model = genAI.getGenerativeModel({
-    model: 'gemini-pro'
-    // safetySettings: safety
-})
-
-const vision = genAI.getGenerativeModel({
-    model: 'gemini-pro-vision'
+    model: 'gemini-2.5-flash-preview-04-17',
+    safetySettings: safety
 })
 
 export class Gemini extends CharacterAI {
-	constructor() {
-		super()
-	}
+    constructor() {
+        super()
+    }
 
     @record()
     async chat({ content, images, ...instruction }: Message) {
@@ -63,12 +59,14 @@ export class Gemini extends CharacterAI {
                 '\nImages description: ' +
                 (await this.vision({ images, content }))
 
-        const chat =  model.startChat({
+        const chat = model.startChat({
             history
             // safetySettings: safety
         })
 
-        const { response } = await this.record('generateResponse', () => chat.sendMessage(content))
+        const { response } = await this.record('generateResponse', () =>
+            chat.sendMessage(content)
+        )
         const sentence = response.text()
 
         return sentence
@@ -87,10 +85,8 @@ export class Gemini extends CharacterAI {
             }))
         )
 
-        const result = await vision.generateContent([content, ...buffers])
-        const response = await result.response
-        const text = response.text()
+        const result = await model.generateContent([content, ...buffers])
 
-        return text
+        return result.response.text()
     }
 }

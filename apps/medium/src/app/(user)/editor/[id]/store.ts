@@ -52,8 +52,6 @@ export const useCharacterEditor = (id: string) => {
         resolver: zodResolver(form)
     })
 
-    console.log(formError)
-
     useEffect(() => {
         if (character?.name) setValue('name', character.name)
         if (character?.greeting) setValue('greeting', character.greeting)

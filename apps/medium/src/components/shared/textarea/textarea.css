@@ -1,0 +1,20 @@
+@reference 'tailwindcss';
+
+.expanding-textarea {
+    @apply relative grid w-full;
+}
+
+.expanding-textarea::after {
+    @apply whitespace-pre-wrap invisible px-3.5 py-2 break-all max-w-full;
+    content: attr(data-replicated-value) ' ';
+}
+
+.expanding-textarea > textarea {
+    @apply resize-none overflow-hidden;
+}
+
+.expanding-textarea::after,
+.expanding-textarea > textarea {
+    grid-area: 1 / 1 / 2 / 2;
+    font: inherit;
+}

@@ -110,7 +110,7 @@ export default function Conversation() {
                         <button
                             role="listitem"
                             disabled
-                            className="text-left text-lg text-lime-800 text-ellipsis whitespace-nowrap overflow-hidden w-full py-3 px-6 rounded-full transition-colors opacity-75 bg-lime-100 cursor-not-allowed"
+                            className="text-left text-lg text-lime-800 text-ellipsis whitespace-nowrap overflow-hidden w-full py-3 px-6 rounded-full transition-colors opacity-75 bg-lime-100 cursor-not-allowed animate-pulse"
                         >
                             New Chat
                         </button>
@@ -118,11 +118,11 @@ export default function Conversation() {
                 )}
                 {isConversationLoading ? (
                     <section className="flex gap-1">
-                        {/* <button
+                        <button
                             role="listitem"
                             disabled
                             className="text-left text-lg text-lime-800 text-ellipsis whitespace-nowrap overflow-hidden w-full py-3 px-6 rounded-2xl bg-lime-100/70 h-96 animate-pulse"
-                        /> */}
+                        />
                     </section>
                 ) : conversations ? (
                     conversations.map(({ id, chats }) => (

@@ -235,7 +235,7 @@ export const useChat = () => {
 
     const isTyping =
         useIsMutating({
-            mutationKey: ['chat', 'add', characterId, chats.length]
+            mutationKey: ['chat', 'add', characterId]
         }) !== 0
 
     const [chatError, setChatError] = useAtom(chatErrorAtom)
@@ -244,8 +244,12 @@ export const useChat = () => {
         setChatError(null)
     }, [conversationId])
 
-    const { mutate: sendMessage, data: response } = useMutation({
-        mutationKey: ['chat', 'add', characterId, chats.length],
+    const {
+        mutate: sendMessage,
+        data: _,
+        isPending: isChatPending
+    } = useMutation({
+        mutationKey: ['chat', 'add', characterId],
         mutationFn: async ({
             content,
             images
@@ -339,7 +343,7 @@ export const useChat = () => {
     return {
         chats,
         isChatLoading: isFetching || isPending,
-        isTyping,
+        isTyping: isTyping || isChatPending,
         dispatch,
         chatError
     }

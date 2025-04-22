@@ -1,20 +1,18 @@
-import { Elysia } from 'elysia'
+import { S3Client, write } from 'bun'
 
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import { env } from '../env'
 import { record } from '../tracing'
 
-const s3Client = new S3Client({
+const s3 = new S3Client({
     region: 'auto',
     endpoint: env.R2_API,
-    credentials: {
-        accessKeyId: env.CF_ACCESS_KEY,
-        secretAccessKey: env.CF_SECRET_KEY
-    }
+    accessKeyId: env.CF_ACCESS_KEY,
+    secretAccessKey: env.CF_SECRET_KEY,
+    bucket: env.BUCKET
 })
 
 export abstract class Storage {
-	@record()
+    @record()
     static async upload(
         file?: Blob | File | null,
         {
@@ -36,21 +34,13 @@ export abstract class Storage {
         // @ts-ignore
         const Key = prefix + (name ?? file?.name)
 
-        const Body = new Uint8Array(await file.arrayBuffer())
-
         const upload = async (iteration = 0): Promise<void> => {
             try {
                 setTimeout(() => {
                     throw new Error('Upload timeout')
                 }, timeout * 1000)
 
-                await s3Client.send(
-                    new PutObjectCommand({
-                        Key,
-                        Bucket: env.BUCKET,
-                        Body
-                    })
-                )
+                await write(s3.file(Key), await file.arrayBuffer())
             } catch (error) {
                 if (iteration >= retry) throw error
 
@@ -91,13 +81,7 @@ export abstract class Storage {
             const Key = prefix + (name ?? file.name ?? `${Date.now()}.jpg`)
 
             try {
-                await s3Client.send(
-                    new PutObjectCommand({
-                        Key,
-                        Bucket: env.BUCKET,
-                        Body: new Uint8Array(await file.arrayBuffer())
-                    })
-                )
+                await write(s3.file(Key), await file.arrayBuffer())
             } catch {
                 throw new Error(
                     'S3 Error: Invalid permission. Please contact developer for correct credential setting'

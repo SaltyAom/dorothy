@@ -1,0 +1,55 @@
+@reference "tailwindcss";
+
+.chat {
+    @apply flex flex-row-reverse gap-2 w-full sm:pl-[12.5%] cursor-default select-none;
+    -webkit-user-drag: none;
+}
+
+.chat > img,
+.chat > .image {
+    @apply size-9 min-w-9 md:size-11 md:min-w-11 rounded-full object-center object-cover select-none;
+    -webkit-user-drag: none;
+}
+
+.chat.-loading {
+    animation: fade-in 0.6s ease-outcubic-bezier(0.16, 1, 0.3, 1) 0s 1 normal backwards;
+}
+
+.chat.-loading > section {
+    @apply w-full;
+}
+
+@screen sm {
+    .chat.-loading {
+        animation-delay: 0.2s;
+    }
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.chat > section {
+    @apply flex flex-col items-end gap-1;
+}
+
+.chat > section > div {
+    @apply min-h-12 px-4 py-3 rounded-xl text-lime-800 bg-lime-100;
+}
+
+.chat.-bot {
+    @apply flex-row sm:pl-0 sm:pr-[12.5%];
+}
+
+.chat.-bot > .section {
+	@apply items-start;
+}
+
+.chat.-bot > section > div {
+    @apply text-slate-800 bg-slate-100;
+}

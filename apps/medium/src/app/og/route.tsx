@@ -1,6 +1,6 @@
 import { ImageResponse } from '@vercel/og'
 
-export const runtime = 'experimental-edge'
+export const runtime = 'nodejs'
 
 export async function GET() {
     return new ImageResponse(

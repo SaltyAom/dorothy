@@ -4,16 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { z } from 'zod'
 
 import { fileListToBase64, useChat } from '../store'
 
-import { resonator } from '@services'
 import { Textarea } from '@shared'
 
 const model = z.object({
-    content: z.string(),
+    content: z.string().min(5),
     // It should be .instanceOf(FileList) but is undefined for some reason
     images: z.any().optional()
 })
@@ -32,7 +30,6 @@ export default function Composer() {
         handleSubmit,
         register,
         reset: resetForm,
-        getValues,
         setValue
     } = useForm<model>({
         resolver: zodResolver(model)
@@ -61,14 +58,14 @@ export default function Composer() {
                     setPreviewImages(undefined)
                 })}
                 onKeyDown={(event) => {
-                    if (
-                        event.key === 'Enter' &&
-                        (event.shiftKey || event.ctrlKey || event.metaKey)
-                    ) {
-                        event.preventDefault()
-                        ;(
-                            event.currentTarget as HTMLFormElement
-                        ).requestSubmit()
+                    if (event.key === 'Enter') {
+                        if (event.shiftKey || event.ctrlKey || event.metaKey)
+                            event.preventDefault()
+                        else {
+                            ;(
+                                event.currentTarget as HTMLFormElement
+                            ).requestSubmit()
+                        }
                     }
                 }}
             >
@@ -136,6 +133,7 @@ export default function Composer() {
                         className="flex flex-1 text-lg bg-transparent placeholder-lime-700 border-none border-transparent focus:border-transparent focus:ring-0 whitespace-prewrap"
                         placeholder="Type a message"
                         inputMode="text"
+                        required
                         {...register('content')}
                     />
                     <button

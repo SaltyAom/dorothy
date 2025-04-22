@@ -17,9 +17,6 @@ module.exports = withPlugins(
         eslint: {
             ignoreDuringBuilds: true
         },
-        experimental: {
-            outputFileTracingRoot: join(__dirname, '../../')
-        },
         output: 'standalone',
         // swcMinify: true,
         typescript: {

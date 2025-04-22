@@ -8,7 +8,7 @@ import {
     useEffect
 } from 'react'
 
-import './textarea.sass'
+import './textarea.css'
 
 const TextArea = forwardRef<
     HTMLTextAreaElement,

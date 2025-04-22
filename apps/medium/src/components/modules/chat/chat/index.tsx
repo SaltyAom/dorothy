@@ -10,7 +10,7 @@ import { easing } from '@services'
 import { useUser } from '@stores'
 import { useCharacter, useChat, useConversationId } from '../store'
 
-import './chat.sass'
+import './chat.css'
 
 function PlaceholderMessages({
     image,
@@ -94,7 +94,7 @@ export default function Chat() {
                     '_' +
                     (isChatLoading ? 'loading' : 'active')
                 }
-                className="flex flex-col flex-1 gap-1 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto"
+                className="flex flex-col flex-1 gap-1 md:gap-2 w-full pt-0 md:pt-4 p-4 overflow-x-hidden overflow-y-auto"
                 initial={{
                     opacity: 0,
                     translateY: 36
@@ -104,7 +104,7 @@ export default function Chat() {
                     translateY: 0
                 }}
                 transition={{
-                    duration: 0.3,
+                    duration: 0.37,
                     ease: easing.outQuint
                 }}
             >
@@ -165,9 +165,7 @@ export default function Chat() {
                     <article className="chat -bot">
                         <img src={image!} alt={name} />
                         <section>
-                            <div>
-                                <span className="loading loading-dots loading-sm translate-y-1 text-current" />
-                            </div>
+                            <div className="min-w-24 animate-pulse" />
                         </section>
                     </article>
                 )}

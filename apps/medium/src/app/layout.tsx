@@ -2,7 +2,7 @@ import type { PropsWithChildren } from 'react'
 
 import Provider from './providers'
 
-import '@styles/global.sass'
+import '@styles/global.css'
 
 export default function RootLayout({ children }: PropsWithChildren) {
     return (

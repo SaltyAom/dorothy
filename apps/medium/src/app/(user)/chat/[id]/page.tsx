@@ -8,11 +8,13 @@ import CleanUp from './clean-up'
 
 import { resonator } from '@services'
 
-export default function Chatroom({
-    params: { id }
+export default async function Chatroom({
+    params
 }: {
-    params: { id: string }
+    params: Promise<{ id: string }>
 }) {
+    const { id } = await params
+
     if (!isServer)
         queryClient.prefetchQuery({
             queryKey: ['character', id],

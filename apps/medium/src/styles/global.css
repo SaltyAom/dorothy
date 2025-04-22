@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+    --muelsyse: #fbfff4;
+    --gallery: 150px;
+}
+
+@theme {
+    --color-muelsyse: var(--muelsyse);
+    --color-border: hsl(var(--border));
+    --color-input: hsl(var(--input));
+    --color-ring: hsl(var(--ring));
+    --color-background: hsl(var(--background));
+    --color-foreground: hsl(var(--foreground));
+}
+
+@screen md {
+    :root {
+        --gallery: 180px;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    @apply bg-muelsyse max-w-full min-h-screen;
+    overflow-x: clip;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+body {
+    padding-top: safe-area-inset-top;
+    padding-bottom: safe-area-inset-bottom;
+}
+
+.drag-none {
+    -webkit-user-drag: none;
+}
+
+.touch-callout-none {
+    -webkit-touch-callout: none;
+}
+
+.gallery {
+    @apply grid;
+    grid-template-columns: repeat(auto-fill,minmax(var(--gallery), 1fr));
+}
+
+.page {
+    @apply absolute flex flex-col max-w-full w-full min-h-screen bg-muelsyse;
+    will-change: left, z-index, overflow;
+}
